@@ -1,0 +1,25 @@
+{
+  "registrations": [
+    {
+      "id": 1,
+      "name": "John Miller",
+      "age": 20,
+      "email": "johnm35@psu.edu",
+      "address": "200 E Fairmount Ave, State College, PA"
+    },
+    {
+      "id": 2,
+      "name": "Alex Johnson",
+      "age": 31,
+      "email": "alexjohn8@gmail.com",
+      "address": "45 Maple St, Harrisburg, PA"
+    },
+    {
+      "id": 3,
+      "name": "Marcus Lee",
+      "age": 18,
+      "email": "marcus.lee@gmail.com",
+      "address": "800 N 3rd St, Philadelphia, PA"
+    }
+  ]
+}
