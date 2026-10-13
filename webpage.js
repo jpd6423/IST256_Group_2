@@ -6,7 +6,7 @@ let registrations = [];
 const rules = {
     name: (n) => /^[A-Za-z][A-Za-z\s'-]{1,49}$/.test(n) ? "" : "Enter your full name (letters only).",
     age: (a) => {
-        
+
         if (!/^\d+$/.test(a)) {
             return "Age must be a whole number.";
         }
@@ -14,6 +14,9 @@ const rules = {
         return age >= 13 ? "" : "Age must be older than 13.";
     },
     email: (e) => {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+            return "Enter a valid email address.";
+        }
     
         for (let i = 0; i < registrations.length; i++) {
             if (registrations[i].email === e) {
