@@ -1,0 +1,179 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conference Event</title>
+
+    
+    <title>Sign Up Now!</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="style.css" rel="stylesheet">
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="web.html">
+                Connect Summit 2026
+            </a>
+
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="web.html">Home</a>
+                <a class="nav-link" href="signup.html">User Signup</a>
+                <a class="nav-link" href="product.html">Product Management</a>
+            </div>
+        </div>
+    </nav>
+</head>
+
+<body>
+ 
+    <main class="container my-5">
+ 
+        <!-- ================= Add / Update Form ================= -->
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="event-info text-start">
+                    <h1 class="text-center mb-2">Conference Items</h1>
+                    <p class="text-center mb-4">
+                        Add, update, or remove passes, merchandise, and catering items for Connect Summit 2026.
+                    </p>
+ 
+                    <h2 class="h4" id="formTitle">Add New Item</h2>
+ 
+                    <form id="productForm" novalidate>
+ 
+                        <!-- Hidden field: JS can store the entry being edited here.
+                             Empty = adding a new item, filled = updating an existing one. -->
+                        <input type="hidden" id="editIndex" value="">
+ 
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="itemId" class="form-label">Item ID <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="itemId" name="itemId"
+                                    placeholder="e.g. TKT-001" required>
+                                <div class="invalid-feedback" id="itemIdError"></div>
+                            </div>
+ 
+                            <div class="col-md-6 mb-3">
+                                <label for="itemTitle" class="form-label">Item Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="itemTitle" name="itemTitle"
+                                    placeholder="e.g. General Admission Pass" required>
+                                <div class="invalid-feedback" id="itemTitleError"></div>
+                            </div>
+                        </div>
+ 
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="itemCategory" class="form-label">Category <span class="text-danger">*</span></label>
+                                <select class="form-select form-control" id="itemCategory" name="itemCategory" required>
+                                    <option value="">Select a category...</option>
+                                    <option value="Ticket">Ticket / Pass</option>
+                                    <option value="Merchandise">Merchandise</option>
+                                    <option value="Food">Food &amp; Beverage</option>
+                                    <option value="Swag">Swag Bag Item</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div class="invalid-feedback" id="itemCategoryError"></div>
+                            </div>
+ 
+                            <div class="col-md-6 mb-3">
+                                <label for="itemUnit" class="form-label">Format / Unit <span class="text-danger">*</span></label>
+                                <select class="form-select form-control" id="itemUnit" name="itemUnit" required>
+                                    <option value="">Select a unit...</option>
+                                    <option value="Each">Each</option>
+                                    <option value="Pack">Pack</option>
+                                    <option value="Box">Box</option>
+                                    <option value="Digital">Digital</option>
+                                </select>
+                                <div class="invalid-feedback" id="itemUnitError"></div>
+                            </div>
+                        </div>
+ 
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="itemPrice" class="form-label">Price (USD) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="itemPrice" name="itemPrice"
+                                    min="0" step="0.01" placeholder="0.00" required>
+                                <div class="invalid-feedback" id="itemPriceError"></div>
+                            </div>
+ 
+                            <div class="col-md-6 mb-3">
+                                <label for="itemInfo" class="form-label">Weight / Additional Info <small class="text-muted">(optional)</small></label>
+                                <input type="text" class="form-control" id="itemInfo" name="itemInfo"
+                                    placeholder="e.g. 0.5 lb, Size M, Vegan">
+                                <div class="invalid-feedback" id="itemInfoError"></div>
+                            </div>
+                        </div>
+ 
+                        <div class="d-flex gap-2 mt-2">
+                            <button type="submit" class="register-btn border-0" id="submitBtn">Add Item</button>
+                            <!-- Shown by JS only while updating an entry -->
+                            <button type="button" class="register-btn border-0 d-none" id="cancelBtn">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+ 
+        <!-- ================= Items Table ================= -->
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="event-info text-start">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                        <h2 class="h4 mb-0">Current Items (<span id="itemCount">0</span>)</h2>
+                    </div>
+ 
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Unit</th>
+                                    <th>Price</th>
+                                    <th>Weight / Info</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTableBody">
+                                <!-- PLACEHOLDER ROW: static example of the expected layout.
+                                     Teammates: remove this row once JS renders real entries from the JSON file.
+                                     Each entry should render one <tr> like this one. -->
+                                <tr>
+                                    <td>TKT-001</td>
+                                    <td>General Admission Pass</td>
+                                    <td>Ticket</td>
+                                    <td>Digital</td>
+                                    <td>$99.00</td>
+                                    <td>&mdash;</td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-primary btn-sm edit-btn" data-id="TKT-001">Edit</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm delete-btn" data-id="TKT-001">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+ 
+                    <!-- Shown by JS when there are no entries -->
+                    <p class="text-center text-muted d-none" id="emptyMessage">No items yet. Add one above to get started.</p>
+                </div>
+            </div>
+        </div>
+ 
+    </main>
+    <script src= "product.js"></script>
+
+</body>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Connect Summit. All Rights Reserved.</p>
+    </footer>
+ 
+    <!-- PLACEHOLDER: teammates will add jQuery and the page script here. -->
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> -->
+    <!-- <script src="products.js"></script> -->
+ 
+
+</html>
