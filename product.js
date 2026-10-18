@@ -213,3 +213,215 @@ for (let i = 0; i < fieldIds.length; i++) {
 }
  
 loadItems();
+
+$(document).ready(function () {
+
+
+    $("#searchInput").on("input", function () {
+
+        let searchText = $(this).val().toLowerCase();
+
+        $("#itemsTableBody tr").each(function () {
+
+            let rowText = $(this).text().toLowerCase();
+
+            if (rowText.includes(searchText)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+
+        });
+
+    });
+
+
+
+
+    function addActionButtons() {
+
+        $("#itemsTableBody tr").each(function () {
+
+            let row = $(this);
+            let itemId = row.find("td:first").text();
+
+            let actions = row.find("td:last");
+
+            actions.empty();
+
+            let editButton = $("<button>")
+                .text("Edit")
+                .addClass("btn btn-primary btn-sm me-2 edit-btn")
+                .attr("data-id", itemId);
+
+            let deleteButton = $("<button>")
+                .text("Delete")
+                .addClass("btn btn-danger btn-sm delete-btn")
+                .attr("data-id", itemId);
+
+            actions.append(editButton, deleteButton);
+
+        });
+
+    }
+
+
+
+    $("#itemsTableBody").on("click", ".edit-btn", function () {
+
+        let id = $(this).attr("data-id");
+
+        let item = items.find(function (product) {
+            return product.itemId === id;
+        });
+
+        if (item) {
+
+            $("#itemId").val(item.itemId).prop("readonly", true);
+
+            $("#itemTitle").val(item.itemTitle);
+            $("#itemCategory").val(item.itemCategory);
+            $("#itemUnit").val(item.itemUnit);
+            $("#itemPrice").val(item.itemPrice);
+            $("#itemInfo").val(item.itemInfo);
+
+            $("#editIndex").val(id);
+
+            $("#formTitle").text("Edit Item");
+            $("#submitBtn").text("Update Item");
+
+            $("#cancelBtn").removeClass("d-none");
+
+            clearAllErrors();
+
+            window.scrollTo(0, 0);
+
+        }
+
+    });
+
+
+
+
+    $("#productForm").on("submit", function (event) {
+
+        let editingId = $("#editIndex").val();
+
+
+        if (editingId === "") {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        let index = items.findIndex(function (item) {
+            return item.itemId === editingId;
+        });
+
+        if (index === -1) {
+            alert("Item not found.");
+            return;
+        }
+
+  
+        let currentItem = items[index];
+
+        items.splice(index, 1);
+
+        let valid = validateForm();
+
+        items.splice(index, 0, currentItem);
+
+        if (!valid) {
+            return;
+        }
+
+        items[index] = {
+            itemId: editingId,
+            itemTitle: $("#itemTitle").val().trim(),
+            itemCategory: $("#itemCategory").val(),
+            itemUnit: $("#itemUnit").val(),
+            itemPrice: Number($("#itemPrice").val()),
+            itemInfo: $("#itemInfo").val().trim()
+        };
+
+        saveItems();
+        renderTable();
+
+        resetEditForm();
+
+        alert("Product updated successfully!");
+
+    });
+
+
+
+    $("#itemsTableBody").on("click", ".delete-btn", function () {
+
+        let id = $(this).attr("data-id");
+
+        if (confirm("Are you sure you want to delete this item?")) {
+
+            items = items.filter(function (item) {
+                return item.itemId !== id;
+            });
+
+            saveItems();
+            renderTable();
+
+            if ($("#editIndex").val() === id) {
+                resetEditForm();
+            }
+
+            alert("Product deleted successfully!");
+
+        }
+
+    });
+
+
+
+    $("#cancelBtn").on("click", function () {
+
+        resetEditForm();
+
+    });
+
+    function resetEditForm() {
+
+        $("#productForm")[0].reset();
+
+        $("#editIndex").val("");
+
+        $("#itemId").prop("readonly", false);
+
+        $("#formTitle").text("Add New Item");
+
+        $("#submitBtn").text("Add Item");
+
+        $("#cancelBtn").addClass("d-none");
+
+        clearAllErrors();
+
+    }
+
+
+
+    let originalRenderTable = renderTable;
+
+    renderTable = function () {
+
+        originalRenderTable();
+
+        addActionButtons();
+
+        // Reapply search after table updates
+        $("#searchInput").trigger("input");
+
+    };
+
+    // Add buttons if the table is already loaded
+    renderTable();
+
+});
