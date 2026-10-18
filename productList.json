@@ -1,0 +1,60 @@
+{
+  "items": [
+    {
+      "itemId": "TKT-001",
+      "itemTitle": "General Admission Pass",
+      "itemCategory": "Ticket",
+      "itemUnit": "Digital",
+      "itemPrice": 99,
+      "itemInfo": ""
+    },
+    {
+      "itemId": "TKT-002",
+      "itemTitle": "VIP Access Pass",
+      "itemCategory": "Ticket",
+      "itemUnit": "Digital",
+      "itemPrice": 250,
+      "itemInfo": "Includes speaker lounge access"
+    },
+    {
+      "itemId": "TKT-003",
+      "itemTitle": "Student Pass",
+      "itemCategory": "Ticket",
+      "itemUnit": "Digital",
+      "itemPrice": 35,
+      "itemInfo": "Valid student ID required"
+    },
+    {
+      "itemId": "MER-001",
+      "itemTitle": "Connect Summit T-Shirt",
+      "itemCategory": "Merchandise",
+      "itemUnit": "Each",
+      "itemPrice": 25,
+      "itemInfo": "Size M"
+    },
+    {
+      "itemId": "FD-002",
+      "itemTitle": "Coffee & Pastry Bundle",
+      "itemCategory": "Food",
+      "itemUnit": "Each",
+      "itemPrice": 7.5,
+      "itemInfo": ""
+    },
+    {
+      "itemId": "SWG-001",
+      "itemTitle": "Branded Notebook",
+      "itemCategory": "Swag",
+      "itemUnit": "Each",
+      "itemPrice": 0,
+      "itemInfo": "0.5 lb"
+    },
+    {
+      "itemId": "OTH-001",
+      "itemTitle": "Workshop Recording Access",
+      "itemCategory": "Other",
+      "itemUnit": "Digital",
+      "itemPrice": 49,
+      "itemInfo": "Available 30 days after event"
+    }
+  ]
+}
