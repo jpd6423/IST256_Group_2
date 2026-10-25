@@ -24,11 +24,11 @@ $(document).ready(function () {
             }
         }
 
-        $.getJSON("productList.json", function (data) {
+        $.getJSON("cart.json", function (data) {
             products = data.items;
             displayProducts();
         }).fail(function () {
-            showStatus("Unable to load productList.json.", "danger");
+            showStatus("Unable to load cart.json.", "danger");
         });
     }
 

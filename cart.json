@@ -1,0 +1,124 @@
+{
+  "items": [
+    {
+      "itemId": "TKT-001",
+      "itemTitle": "General Admission Pass",
+      "itemCategory": "Ticket",
+      "itemUnit": "Digital",
+      "itemPrice": 99,
+      "itemInfo": "Access to all keynotes and the expo hall"
+    },
+    {
+      "itemId": "TKT-002",
+      "itemTitle": "VIP All-Access Pass",
+      "itemCategory": "Ticket",
+      "itemUnit": "Digital",
+      "itemPrice": 249,
+      "itemInfo": "Includes workshops, VIP lounge, and networking dinner"
+    },
+    {
+      "itemId": "TKT-003",
+      "itemTitle": "Student Pass",
+      "itemCategory": "Ticket",
+      "itemUnit": "Digital",
+      "itemPrice": 49,
+      "itemInfo": "Valid student ID required at check-in"
+    },
+    {
+      "itemId": "TKT-004",
+      "itemTitle": "Workshop Add-On",
+      "itemCategory": "Ticket",
+      "itemUnit": "Digital",
+      "itemPrice": 59,
+      "itemInfo": "One hands-on afternoon workshop session"
+    },
+    {
+      "itemId": "MER-001",
+      "itemTitle": "Connect Summit T-Shirt",
+      "itemCategory": "Merchandise",
+      "itemUnit": "Each",
+      "itemPrice": 24.99,
+      "itemInfo": "Unisex sizes: S-XXL"
+    },
+    {
+      "itemId": "MER-002",
+      "itemTitle": "Summit Hoodie",
+      "itemCategory": "Merchandise",
+      "itemUnit": "Each",
+      "itemPrice": 44.99,
+      "itemInfo": "Heavyweight fleece"
+    },
+    {
+      "itemId": "MER-003",
+      "itemTitle": "Insulated Water Bottle",
+      "itemCategory": "Merchandise",
+      "itemUnit": "Each",
+      "itemPrice": 18.5,
+      "itemInfo": "20 oz stainless steel"
+    },
+    {
+      "itemId": "FOD-001",
+      "itemTitle": "Lunch Voucher",
+      "itemCategory": "Food",
+      "itemUnit": "Voucher",
+      "itemPrice": 15,
+      "itemInfo": "Redeemable at any food station, one day"
+    },
+    {
+      "itemId": "FOD-002",
+      "itemTitle": "Coffee Bar Pass",
+      "itemCategory": "Food",
+      "itemUnit": "Pass",
+      "itemPrice": 12,
+      "itemInfo": "Unlimited coffee and tea voucher"
+    },
+    {
+      "itemId": "FOD-003",
+      "itemTitle": "Networking Dinner Ticket",
+      "itemCategory": "Food",
+      "itemUnit": "Seat",
+      "itemPrice": 65,
+      "itemInfo": "Evening of day one, plated dinner"
+    },
+    {
+      "itemId": "SWG-001",
+      "itemTitle": "Sticker Pack",
+      "itemCategory": "Swag",
+      "itemUnit": "Pack",
+      "itemPrice": 4.99,
+      "itemInfo": "8 vinyl stickers"
+    },
+    {
+      "itemId": "SWG-002",
+      "itemTitle": "Branded Notebook",
+      "itemCategory": "Swag",
+      "itemUnit": "Each",
+      "itemPrice": 9.99,
+      "itemInfo": "120 pages"
+    },
+    {
+      "itemId": "SWG-003",
+      "itemTitle": "Tote Bag",
+      "itemCategory": "Swag",
+      "itemUnit": "Each",
+      "itemPrice": 12.99,
+      "itemInfo": "0.6 lb, 100% cotton"
+    },
+    {
+      "itemId": "OTH-001",
+      "itemTitle": "Parking Pass",
+      "itemCategory": "Other",
+      "itemUnit": "Day",
+      "itemPrice": 20,
+      "itemInfo": "Garage parking, one day"
+    },
+    {
+      "itemId": "OTH-002",
+      "itemTitle": "Session Recording Access",
+      "itemCategory": "Other",
+      "itemUnit": "Digital",
+      "itemPrice": 29,
+      "itemInfo": "Video of all sessions for 90 days"
+    }
+  ]
+}
