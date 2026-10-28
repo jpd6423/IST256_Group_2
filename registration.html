@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="web.html">
+                Connect Summit 2026
+            </a>
+
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="web.html">Home</a>
+                <a class="nav-link" href="signup.html">User Signup</a>
+                <a class="nav-link active" href="registration.html">Registration</a>
+                <a class="nav-link" href="product.html">Product Management</a>
+                <a class="nav-link" href="cart.html">Shopping Cart</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+
+                <!-- ================= Registration Form ================= -->
+                <div class="event-info text-start" id="registrationCard">
+                    <h1 class="text-center mb-2">Registration</h1>
+                    <p class="text-center mb-4">
+                        Pick the sessions you want to attend and how you'll be joining us on November 15, 2026.
+                    </p>
+
+                    <form id="registrationForm" novalidate>
+
+                        <!-- Attendee info -->
+                        <h2 class="h5 section-title">1. Your Information</h2>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" required>
+                                <div class="invalid-feedback">Enter your full name (letters only).</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="regEmail" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="regEmail" required>
+                                <div class="invalid-feedback">Enter a valid email address.</div>
+                            </div>
+                        </div>
+
+                        <!-- Session selection -->
+                        <h2 class="h5 section-title">2. Session Registration</h2>
+                        <div class="list-group mb-2" id="sessionList">
+                            <label class="list-group-item session-option">
+                                <input class="form-check-input me-2" type="checkbox" name="session"
+                                    value="Opening Keynote" data-time="9:00 AM - 10:00 AM">
+                                <span class="fw-bold">Opening Keynote</span>
+                                <span class="badge session-time float-end">9:00 AM</span>
+                                <small class="d-block text-muted ms-4">Welcome and the year ahead for the community.</small>
+                            </label>
+                            <label class="list-group-item session-option">
+                                <input class="form-check-input me-2" type="checkbox" name="session"
+                                    value="Networking Workshop" data-time="10:30 AM - 12:00 PM">
+                                <span class="fw-bold">Networking Workshop</span>
+                                <span class="badge session-time float-end">10:30 AM</span>
+                                <small class="d-block text-muted ms-4">Hands-on activities to meet other attendees.</small>
+                            </label>
+                            <label class="list-group-item session-option">
+                                <input class="form-check-input me-2" type="checkbox" name="session"
+                                    value="Panel Discussion" data-time="1:00 PM - 2:30 PM">
+                                <span class="fw-bold">Panel Discussion</span>
+                                <span class="badge session-time float-end">1:00 PM</span>
+                                <small class="d-block text-muted ms-4">Guest speakers answer audience questions.</small>
+                            </label>
+                            <label class="list-group-item session-option">
+                                <input class="form-check-input me-2" type="checkbox" name="session"
+                                    value="Closing Social" data-time="3:30 PM - 5:00 PM">
+                                <span class="fw-bold">Closing Social</span>
+                                <span class="badge session-time float-end">3:30 PM</span>
+                                <small class="d-block text-muted ms-4">Wrap up the day with food and conversation.</small>
+                            </label>
+                        </div>
+                        <div class="text-danger small mb-4 d-none" id="sessionError">Select at least one session.</div>
+
+                        <!-- Participation type -->
+                        <h2 class="h5 section-title mt-4">3. Participation Type</h2>
+                        <div class="row g-3 mb-2">
+                            <div class="col-md-4">
+                                <label class="participation-card" for="inPerson">
+                                    <input type="radio" class="form-check-input" name="participation" id="inPerson" value="In-Person">
+                                    <span class="participation-title">In-Person</span>
+                                    <span class="participation-desc">Attend live in Philadelphia, PA.</span>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="participation-card" for="virtual">
+                                    <input type="radio" class="form-check-input" name="participation" id="virtual" value="Virtual">
+                                    <span class="participation-title">Virtual</span>
+                                    <span class="participation-desc">Stream every session from anywhere.</span>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="participation-card" for="vip">
+                                    <input type="radio" class="form-check-input" name="participation" id="vip" value="VIP">
+                                    <span class="participation-title">VIP</span>
+                                    <span class="participation-desc">Front-row seating and speaker meet &amp; greet.</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="text-danger small mb-3 d-none" id="participationError">Choose a participation type.</div>
+
+                        <button type="submit" class="register-btn border-0 w-100 mt-3 fw-bold">Confirm Registration</button>
+                    </form>
+                </div>
+
+                <!-- ================= Confirmation Details ================= -->
+                <div class="event-info text-start d-none" id="confirmationCard">
+                    <div class="text-center mb-4">
+                        <div class="confirm-check">&#10003;</div>
+                        <h1 class="mb-1">You're Registered!</h1>
+                        <p class="mb-0">Confirmation #<strong id="confirmNumber"></strong></p>
+                    </div>
+
+                    <h2 class="h5 section-title">Confirmation Details</h2>
+                    <table class="table confirm-table">
+                        <tbody>
+                            <tr><th scope="row">Name</th><td id="confirmName"></td></tr>
+                            <tr><th scope="row">Email</th><td id="confirmEmail"></td></tr>
+                            <tr><th scope="row">Participation</th><td><span class="badge text-bg-primary" id="confirmType"></span></td></tr>
+                            <tr><th scope="row">Date</th><td>November 15, 2026</td></tr>
+                            <tr><th scope="row">Location</th><td id="confirmLocation"></td></tr>
+                        </tbody>
+                    </table>
+
+                    <h3 class="h6 section-title">Your Sessions</h3>
+                    <ul class="list-group mb-4" id="confirmSessions"></ul>
+
+                    <p class="small text-muted text-center">A copy of these details will be sent to your email.</p>
+                    <div class="text-center">
+                        <button type="button" class="register-btn border-0" id="editBtn">Edit Registration</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Connect Summit. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        const regForm = document.getElementById("registrationForm");
+        const nameInput = document.getElementById("fullName");
+        const emailInput = document.getElementById("regEmail");
+
+        // Mark a text input valid/invalid with Bootstrap classes
+        function checkInput(input, isValid) {
+            input.classList.toggle("is-invalid", !isValid);
+            input.classList.toggle("is-valid", isValid);
+            return isValid;
+        }
+
+        regForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            const sessions = Array.from(document.querySelectorAll("input[name='session']:checked"));
+            const participation = document.querySelector("input[name='participation']:checked");
+
+            let isFormValid = true;
+            if (!checkInput(nameInput, /^[A-Za-z][A-Za-z\s'-]{1,49}$/.test(name))) isFormValid = false;
+            if (!checkInput(emailInput, /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) isFormValid = false;
+
+            document.getElementById("sessionError").classList.toggle("d-none", sessions.length > 0);
+            document.getElementById("participationError").classList.toggle("d-none", participation !== null);
+            if (sessions.length === 0 || participation === null) isFormValid = false;
+
+            if (!isFormValid) {
+                return;
+            }
+
+            // Fill in confirmation details
+            document.getElementById("confirmNumber").textContent = "CS26-" + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById("confirmName").textContent = name;
+            document.getElementById("confirmEmail").textContent = email;
+            document.getElementById("confirmType").textContent = participation.value;
+            document.getElementById("confirmLocation").textContent =
+                participation.value === "Virtual" ? "Online (stream link sent by email)" : "Philadelphia, PA";
+
+            const list = document.getElementById("confirmSessions");
+            list.innerHTML = "";
+            sessions.forEach((s) => {
+                const item = document.createElement("li");
+                item.className = "list-group-item d-flex justify-content-between";
+                item.textContent = s.value;
+                const time = document.createElement("span");
+                time.className = "text-muted";
+                time.textContent = s.dataset.time;
+                item.appendChild(time);
+                list.appendChild(item);
+            });
+
+            document.getElementById("registrationCard").classList.add("d-none");
+            document.getElementById("confirmationCard").classList.remove("d-none");
+            window.scrollTo(0, 0);
+        });
+
+        // Go back to the form with the previous answers kept
+        document.getElementById("editBtn").addEventListener("click", () => {
+            document.getElementById("confirmationCard").classList.add("d-none");
+            document.getElementById("registrationCard").classList.remove("d-none");
+        });
+    </script>
+
+</body>
+
+</html>
