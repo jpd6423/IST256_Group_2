@@ -1,0 +1,62 @@
+{
+  "registrations": [
+    {
+      "confirmationNumber": "CS26-100001",
+      "name": "John Miller",
+      "email": "johnm35@psu.edu",
+      "participation": "In-Person",
+      "location": "Philadelphia, PA",
+      "date": "November 15, 2026",
+      "sessions": [
+        {
+          "name": "Opening Keynote",
+          "time": "9:00 AM - 10:00 AM"
+        },
+        {
+          "name": "Panel Discussion",
+          "time": "1:00 PM - 2:30 PM"
+        }
+      ]
+    },
+    {
+      "confirmationNumber": "CS26-100002",
+      "name": "Alex Johnson",
+      "email": "alexjohn8@gmail.com",
+      "participation": "Virtual",
+      "location": "Online (stream link sent by email)",
+      "date": "November 15, 2026",
+      "sessions": [
+        {
+          "name": "Networking Workshop",
+          "time": "10:30 AM - 12:00 PM"
+        }
+      ]
+    },
+    {
+      "confirmationNumber": "CS26-100003",
+      "name": "Marcus Lee",
+      "email": "marcus.lee@gmail.com",
+      "participation": "VIP",
+      "location": "Philadelphia, PA",
+      "date": "November 15, 2026",
+      "sessions": [
+        {
+          "name": "Opening Keynote",
+          "time": "9:00 AM - 10:00 AM"
+        },
+        {
+          "name": "Networking Workshop",
+          "time": "10:30 AM - 12:00 PM"
+        },
+        {
+          "name": "Panel Discussion",
+          "time": "1:00 PM - 2:30 PM"
+        },
+        {
+          "name": "Closing Social",
+          "time": "3:30 PM - 5:00 PM"
+        }
+      ]
+    }
+  ]
+}

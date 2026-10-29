@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-
+ 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration</title>
-
+ 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link href="style.css" rel="stylesheet">
 </head>
-
+ 
 <body>
-
+ 
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="web.html">
                 Connect Summit 2026
             </a>
-
+ 
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="web.html">Home</a>
                 <a class="nav-link" href="signup.html">User Signup</a>
@@ -29,20 +29,20 @@
             </div>
         </div>
     </nav>
-
+ 
     <main class="container my-5">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
-
+ 
                 <!-- ================= Registration Form ================= -->
                 <div class="event-info text-start" id="registrationCard">
                     <h1 class="text-center mb-2">Registration</h1>
                     <p class="text-center mb-4">
                         Pick the sessions you want to attend and how you'll be joining us on November 15, 2026.
                     </p>
-
+ 
                     <form id="registrationForm" novalidate>
-
+ 
                         <!-- Attendee info -->
                         <h2 class="h5 section-title">1. Your Information</h2>
                         <div class="row g-3 mb-4">
@@ -57,7 +57,7 @@
                                 <div class="invalid-feedback">Enter a valid email address.</div>
                             </div>
                         </div>
-
+ 
                         <!-- Session selection -->
                         <h2 class="h5 section-title">2. Session Registration</h2>
                         <div class="list-group mb-2" id="sessionList">
@@ -91,7 +91,7 @@
                             </label>
                         </div>
                         <div class="text-danger small mb-4 d-none" id="sessionError">Select at least one session.</div>
-
+ 
                         <!-- Participation type -->
                         <h2 class="h5 section-title mt-4">3. Participation Type</h2>
                         <div class="row g-3 mb-2">
@@ -118,11 +118,11 @@
                             </div>
                         </div>
                         <div class="text-danger small mb-3 d-none" id="participationError">Choose a participation type.</div>
-
+ 
                         <button type="submit" class="register-btn border-0 w-100 mt-3 fw-bold">Confirm Registration</button>
                     </form>
                 </div>
-
+ 
                 <!-- ================= Confirmation Details ================= -->
                 <div class="event-info text-start d-none" id="confirmationCard">
                     <div class="text-center mb-4">
@@ -130,7 +130,7 @@
                         <h1 class="mb-1">You're Registered!</h1>
                         <p class="mb-0">Confirmation #<strong id="confirmNumber"></strong></p>
                     </div>
-
+ 
                     <h2 class="h5 section-title">Confirmation Details</h2>
                     <table class="table confirm-table">
                         <tbody>
@@ -141,27 +141,54 @@
                             <tr><th scope="row">Location</th><td id="confirmLocation"></td></tr>
                         </tbody>
                     </table>
-
+ 
                     <h3 class="h6 section-title">Your Sessions</h3>
                     <ul class="list-group mb-4" id="confirmSessions"></ul>
-
+ 
+                    <!-- JSON document created from the form -->
+                    <h3 class="h6 section-title">Registration JSON</h3>
+                    <pre class="border rounded p-3 bg-light small" id="jsonOutput"></pre>
+ 
                     <p class="small text-muted text-center">A copy of these details will be sent to your email.</p>
                     <div class="text-center">
                         <button type="button" class="register-btn border-0" id="editBtn">Edit Registration</button>
                     </div>
                 </div>
-
+ 
+                <!-- ================= Registered Attendees (filled by jQuery) ================= -->
+                <div class="event-info text-start">
+                    <h2 class="h4">Registered Attendees (<span id="regCount">0</span>)</h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Confirmation #</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Sessions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="regTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+ 
+                <!-- TODO (React): mount the React registration component here -->
+                <div id="react-root"></div>
+ 
             </div>
         </div>
     </main>
-
+ 
     <footer>
         <p>&copy; 2026 Connect Summit. All Rights Reserved.</p>
     </footer>
-
-
-    <script src ="registration.js"></script>
-
+ 
+    <!-- TODO (React): add the React / ReactDOM / Babel script tags here when ready -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="registration.js"></script>
+ 
 </body>
-
+ 
 </html>
+ 
