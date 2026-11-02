@@ -25,7 +25,7 @@ const conferenceSessions = [
 ];
 
 // Replace with a real API address when available
-const API_URL = "";
+const API_URL = "https://jsonplaceholder.typicode.com/posts";
 
 function Registration() {
 
@@ -152,53 +152,33 @@ function Registration() {
     function sendRegistration(registrationData) {
 
         if (API_URL === "") {
-
             console.log("JSON prepared for REST API:");
-            console.log(
-                JSON.stringify(registrationData, null, 2)
-            );
-
-            setStatus(
-                "Registration saved locally. " +
-                "REST API is not connected yet."
-            );
-
+            console.log(JSON.stringify(registrationData, null, 2));
+            setStatus("Registration saved locally. REST API is not connected yet.");
             return;
         }
 
         setStatus("Sending registration to API...");
 
         $.ajax({
-
             url: API_URL,
-
-            type: editingId ? "PUT" : "POST",
-
+            type: "POST",
             contentType: "application/json",
-
             dataType: "json",
-
             data: JSON.stringify(registrationData),
 
             success: function (response) {
-
                 console.log("API response:", response);
-
                 setStatus(
-                    "Registration successfully sent to the API!"
+                    "Registration " + response.confirmationNumber +
+                    " was sent to the API! Server response ID: " + response.id
                 );
             },
 
-            error: function (xhr, status, error) {
-
-                console.error("AJAX error:", error);
-
-                setStatus(
-                    "Registration saved locally, " +
-                    "but the API request failed."
-                );
+            error: function (xhr, textStatus, error) {
+                console.log("AJAX error: " + textStatus + " " + error);
+                setStatus("Registration saved locally, but the API request failed.");
             }
-
         });
     }
 
