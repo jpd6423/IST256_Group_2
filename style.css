@@ -427,3 +427,160 @@ footer p {
         width: 100%;
     }
 }
+
+
+
+
+/* Returns Page Cards */
+.returns-box {
+    background-color: var(--theme-white);
+    padding: 35px;
+    border-radius: 10px;
+    border-top: 5px solid var(--theme-blue);
+    box-shadow: 0 4px 12px rgba(0, 51, 102, 0.12);
+    margin-bottom: 20px;
+}
+
+/* Returns Section Headings */
+.returns-box h2,
+.returns-box h3 {
+    color: var(--theme-dark-blue);
+    font-weight: bold;
+}
+
+/* Form Labels */
+.returns-box .form-label {
+    color: var(--theme-dark-blue);
+    font-weight: bold;
+}
+
+/* Form Inputs */
+.returns-box .form-control,
+.returns-box .form-select {
+    border: 1px solid #b3cde6;
+    border-radius: 5px;
+    padding: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* Input Focus */
+.returns-box .form-control:focus,
+.returns-box .form-select:focus {
+    border-color: var(--theme-blue);
+    box-shadow: 0 0 0 0.2rem rgba(0, 85, 170, 0.25);
+}
+
+/* Products Table */
+.returns-box .table {
+    margin-bottom: 0;
+}
+
+.returns-box .table thead th {
+    background-color: var(--theme-light-blue);
+    color: var(--theme-dark-blue);
+    font-weight: bold;
+    padding: 12px;
+}
+
+.returns-box .table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.returns-box .table tbody tr:hover {
+    background-color: #f0f7ff;
+}
+
+/* Product Selection Radio Buttons */
+.returns-box .form-check-input {
+    border: 2px solid var(--theme-blue);
+    cursor: pointer;
+}
+
+.returns-box .form-check-input:checked {
+    background-color: var(--theme-blue);
+    border-color: var(--theme-blue);
+}
+
+/* Submit Return Button */
+.returns-btn {
+    display: inline-block;
+    background-color: var(--theme-dark-blue);
+    color: var(--theme-white);
+    padding: 12px 28px;
+    border: none;
+    border-radius: 5px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.returns-btn:hover {
+    background-color: var(--theme-blue);
+    color: var(--theme-white);
+    transform: translateY(-2px);
+}
+
+/* Return Summary Items */
+.return-summary-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #d6e6f5;
+}
+
+.return-summary-item strong {
+    color: var(--theme-dark-blue);
+}
+
+.return-summary-item p {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+/* Return Policy Information */
+.return-policy {
+    background-color: var(--theme-light-blue);
+    border-left: 4px solid var(--theme-blue);
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.return-policy h3 {
+    color: var(--theme-dark-blue);
+    margin-bottom: 10px;
+}
+
+.return-policy p {
+    color: #1a2b40;
+    font-size: 14px;
+}
+
+/* Return to Cart Button */
+.returns-box .btn-outline-primary {
+    color: var(--theme-blue);
+    border-color: var(--theme-blue);
+}
+
+.returns-box .btn-outline-primary:hover {
+    background-color: var(--theme-blue);
+    border-color: var(--theme-blue);
+    color: var(--theme-white);
+}
+
+/* Mobile Layout */
+@media (max-width: 576px) {
+
+    .returns-box {
+        padding: 20px;
+    }
+
+    .returns-box .table {
+        font-size: 13px;
+    }
+
+    .returns-btn {
+        width: 100%;
+    }
+
+}

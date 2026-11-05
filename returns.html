@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Returns - Connect Summit 2026</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Existing Connect Summit CSS -->
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+
+            <a class="navbar-brand" href="web.html">
+                Connect Summit 2026
+            </a>
+
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="web.html">Home</a>
+                <a class="nav-link" href="signup.html">User Signup</a>
+                <a class="nav-link" href="registration.html">Registration</a>
+                <a class="nav-link" href="product.html">Product Management</a>
+                <a class="nav-link" href="cart.html">Shopping Cart</a>
+                <a class="nav-link" href="billing.html">Billing Details</a>
+                <a class="nav-link active" href="returns.html">Returns</a>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+
+        <h1 class="text-center mb-2">Product Returns</h1>
+
+        <p class="text-center mb-5">
+            Request a return for merchandise or products
+            purchased from Connect Summit 2026.
+        </p>
+
+        <div class="row g-4">
+
+            <!-- Left Side: Product Selection and Return Form -->
+            <div class="col-lg-7">
+
+                <div class="returns-box">
+
+                    <h2 class="h4 mb-4">Select a Product to Return</h2>
+
+                    <!-- Search Products -->
+                    <div class="mb-4">
+
+                        <label for="productSearch" class="form-label">
+                            Search Purchased Products
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="productSearch"
+                               placeholder="Search by product name or ID">
+
+                    </div>
+
+                    <!-- Products Table -->
+                    <div class="table-responsive">
+
+                        <table class="table table-striped align-middle">
+
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Select</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <!-- Example Product 1 -->
+                                <tr>
+                                    <td>
+                                        <strong>Connect Summit T-Shirt</strong>
+                                        <small class="d-block text-muted">
+                                            MER-001
+                                        </small>
+                                    </td>
+
+                                    <td>Merchandise</td>
+                                    <td>$25.00</td>
+
+                                    <td>
+                                        <input type="radio"
+                                               class="form-check-input"
+                                               name="returnProduct"
+                                               value="MER-001">
+                                    </td>
+                                </tr>
+
+                                <!-- Example Product 2 -->
+                                <tr>
+                                    <td>
+                                        <strong>Branded Notebook</strong>
+                                        <small class="d-block text-muted">
+                                            SWG-001
+                                        </small>
+                                    </td>
+
+                                    <td>Swag</td>
+                                    <td>$0.00</td>
+
+                                    <td>
+                                        <input type="radio"
+                                               class="form-check-input"
+                                               name="returnProduct"
+                                               value="SWG-001">
+                                    </td>
+                                </tr>
+
+                                <!-- Example Product 3 -->
+                                <tr>
+                                    <td>
+                                        <strong>General Admission Pass</strong>
+                                        <small class="d-block text-muted">
+                                            TKT-001
+                                        </small>
+                                    </td>
+
+                                    <td>Ticket</td>
+                                    <td>$99.00</td>
+
+                                    <td>
+                                        <input type="radio"
+                                               class="form-check-input"
+                                               name="returnProduct"
+                                               value="TKT-001">
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+                <!-- Return Details Form -->
+                <div class="returns-box mt-4">
+
+                    <h2 class="h4 mb-4">Return Request Details</h2>
+
+                    <form id="returnsForm">
+
+                        <!-- Customer Name -->
+                        <div class="mb-3">
+
+                            <label for="customerName" class="form-label">
+                                Full Name
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   id="customerName"
+                                   name="customerName"
+                                   placeholder="Enter your full name"
+                                   required>
+
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+
+                            <label for="returnEmail" class="form-label">
+                                Email Address
+                            </label>
+
+                            <input type="email"
+                                   class="form-control"
+                                   id="returnEmail"
+                                   name="returnEmail"
+                                   placeholder="example@email.com"
+                                   required>
+
+                        </div>
+
+                        <!-- Order Number -->
+                        <div class="mb-3">
+
+                            <label for="orderNumber" class="form-label">
+                                Order Number
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   id="orderNumber"
+                                   name="orderNumber"
+                                   placeholder="Enter your order number"
+                                   required>
+
+                        </div>
+
+                        <!-- Reason for Return -->
+                        <div class="mb-3">
+
+                            <label for="returnReason" class="form-label">
+                                Reason for Return
+                            </label>
+
+                            <select class="form-select"
+                                    id="returnReason"
+                                    name="returnReason"
+                                    required>
+
+                                <option value="" selected disabled>
+                                    Select a reason
+                                </option>
+
+                                <option value="Damaged Product">
+                                    Damaged Product
+                                </option>
+
+                                <option value="Wrong Item">
+                                    Wrong Item Received
+                                </option>
+
+                                <option value="No Longer Needed">
+                                    No Longer Needed
+                                </option>
+
+                                <option value="Event Conflict">
+                                    Event Schedule Conflict
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- Product Condition -->
+                        <div class="mb-3">
+
+                            <label for="productCondition" class="form-label">
+                                Product Condition
+                            </label>
+
+                            <select class="form-select"
+                                    id="productCondition"
+                                    name="productCondition"
+                                    required>
+
+                                <option value="" selected disabled>
+                                    Select product condition
+                                </option>
+
+                                <option value="New">
+                                    New / Unused
+                                </option>
+
+                                <option value="Opened">
+                                    Opened Packaging
+                                </option>
+
+                                <option value="Used">
+                                    Used
+                                </option>
+
+                                <option value="Damaged">
+                                    Damaged
+                                </option>
+
+                                <option value="Digital">
+                                    Digital Product / Ticket
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- Additional Comments -->
+                        <div class="mb-3">
+
+                            <label for="returnComments" class="form-label">
+                                Additional Comments
+                            </label>
+
+                            <textarea class="form-control"
+                                      id="returnComments"
+                                      name="returnComments"
+                                      rows="4"
+                                      placeholder="Provide additional information about your return">
+                            </textarea>
+
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="button"
+                                class="returns-btn w-100 mt-3">
+                            Submit Return Request
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <!-- Right Side: Return Summary -->
+            <div class="col-lg-5">
+
+                <div class="returns-box">
+
+                    <h2 class="h4 mb-4">Return Summary</h2>
+
+                    <div class="return-summary-item">
+
+                        <div>
+                            <strong>Selected Product:</strong>
+                            <p class="text-muted mb-0">
+                                Connect Summit T-Shirt
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="return-summary-item">
+
+                        <div>
+                            <strong>Product Price:</strong>
+                            <p class="text-muted mb-0">
+                                $25.00
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="return-summary-item">
+
+                        <div>
+                            <strong>Return Status:</strong>
+                            <p class="text-muted mb-0">
+                                Not Submitted
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="return-policy">
+
+                        <h3 class="h6">Return Information</h3>
+
+                        <p class="mb-0">
+                            Submit your return request with the
+                            correct order number and product details.
+                            Our team will review the request and
+                            provide an update on its status.
+                        </p>
+
+                    </div>
+
+                    <a href="cart.html"
+                       class="btn btn-outline-primary w-100 mt-4">
+                        Return to Shopping Cart
+                    </a>
+
+                </div>
+
+                <!-- Additional Information -->
+                <div class="returns-box mt-4">
+
+                    <h2 class="h5 mb-3">Need Assistance?</h2>
+
+                    <p>
+                        If you have questions about a conference
+                        ticket or merchandise return, please
+                        include details in the comments section.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Connect Summit. All Rights Reserved.</p>
+    </footer>
+
+</body>
+
+</html>
