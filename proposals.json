@@ -1,0 +1,105 @@
+{
+  "event": {
+    "name": "Connect Summit 2026",
+    "date": "November 15, 2026",
+    "location": "Philadelphia, PA"
+  },
+  "options": {
+    "sessionTypes": [
+      { "value": "Keynote", "allowedDurations": [60] },
+      { "value": "Talk", "allowedDurations": [30, 45] },
+      { "value": "Workshop", "allowedDurations": [60, 90] },
+      { "value": "Panel", "allowedDurations": [45, 60, 90] },
+      { "value": "Lightning Talk", "allowedDurations": [15] }
+    ],
+    "tracks": ["Technology", "Business", "Networking", "Leadership", "Design"],
+    "formats": ["In-Person", "Virtual", "Hybrid"],
+    "audienceLevels": ["Beginner", "Intermediate", "Advanced"],
+    "avNeeds": ["Projector", "Microphone", "Whiteboard", "Livestream", "Recording"],
+    "statuses": ["Pending", "Approved", "Rejected", "Revisions Requested"]
+  },
+  "proposals": [
+    {
+      "proposalId": "SP26-0001",
+      "title": "Building Community Through Hybrid Events",
+      "speaker": {
+        "name": "Priya Shah",
+        "email": "priya.shah@psu.edu",
+        "organization": "Penn State University",
+        "bio": "Priya is an event technology researcher who has helped plan more than twenty hybrid conferences across the northeast."
+      },
+      "sessionType": "Talk",
+      "track": "Technology",
+      "durationMinutes": 45,
+      "format": "Hybrid",
+      "audienceLevel": "Intermediate",
+      "abstract": "Hybrid events promise the reach of virtual and the energy of in-person, but most end up serving one audience poorly. This talk walks through practical techniques for engaging both rooms at once, including moderated chat, shared polling, and dedicated remote hosts, with examples from recent regional conferences.",
+      "keywords": ["hybrid", "engagement", "event tech"],
+      "avNeeds": ["Projector", "Microphone", "Livestream"],
+      "submittedAt": "2026-10-02T14:22:00.000Z",
+      "status": "Approved",
+      "review": {
+        "reviewer": "Jordan Davis",
+        "reviewedAt": "2026-10-10T16:05:00.000Z",
+        "comments": "Strong fit for the technology track."
+      },
+      "history": [
+        { "status": "Pending", "by": "Priya Shah", "at": "2026-10-02T14:22:00.000Z", "note": "Submitted" },
+        { "status": "Approved", "by": "Jordan Davis", "at": "2026-10-10T16:05:00.000Z", "note": "Strong fit for the technology track." }
+      ]
+    },
+    {
+      "proposalId": "SP26-0002",
+      "title": "Hands-On Networking for Introverts",
+      "speaker": {
+        "name": "Marcus Lee",
+        "email": "marcus.lee@gmail.com",
+        "organization": "",
+        "bio": "Marcus is a career coach who runs small-group workshops helping early-career professionals build confidence when meeting new people."
+      },
+      "sessionType": "Workshop",
+      "track": "Networking",
+      "durationMinutes": 90,
+      "format": "In-Person",
+      "audienceLevel": "Beginner",
+      "abstract": "Networking advice usually assumes everyone enjoys walking up to strangers. This workshop gives quieter attendees a structured set of exercises, conversation starters, and follow-up habits they can practice in pairs and small groups, so they leave the session with real connections instead of a stack of unread business cards.",
+      "keywords": ["networking", "career", "workshop"],
+      "avNeeds": ["Microphone", "Whiteboard"],
+      "submittedAt": "2026-10-05T09:10:00.000Z",
+      "status": "Pending",
+      "review": null,
+      "history": [
+        { "status": "Pending", "by": "Marcus Lee", "at": "2026-10-05T09:10:00.000Z", "note": "Submitted" }
+      ]
+    },
+    {
+      "proposalId": "SP26-0003",
+      "title": "Leading Remote Teams Without Burnout",
+      "speaker": {
+        "name": "Alex Johnson",
+        "email": "alexjohn8@gmail.com",
+        "organization": "Northwind Consulting",
+        "bio": "Alex manages a fully remote team of fifteen and writes about sustainable management practices for distributed organizations."
+      },
+      "sessionType": "Panel",
+      "track": "Leadership",
+      "durationMinutes": 60,
+      "format": "Virtual",
+      "audienceLevel": "Advanced",
+      "abstract": "Remote work removed the commute but added an always-on culture that wears teams down. This panel brings together managers from three industries to compare how they set boundaries, run meetings, and measure output so their teams stay productive without burning out. The audience will be invited to submit questions throughout.",
+      "keywords": ["remote work", "leadership", "wellbeing"],
+      "avNeeds": ["Microphone", "Recording"],
+      "submittedAt": "2026-10-08T18:45:00.000Z",
+      "status": "Revisions Requested",
+      "review": {
+        "reviewer": "Jordan Davis",
+        "reviewedAt": "2026-10-12T13:30:00.000Z",
+        "comments": "Please list the confirmed panelists before we can approve."
+      },
+      "history": [
+        { "status": "Pending", "by": "Alex Johnson", "at": "2026-10-08T18:45:00.000Z", "note": "Submitted" },
+        { "status": "Revisions Requested", "by": "Jordan Davis", "at": "2026-10-12T13:30:00.000Z", "note": "Please list the confirmed panelists before we can approve." }
+      ]
+    }
+  ]
+}
