@@ -1,0 +1,35 @@
+{
+  "billingRecords": [
+    {
+      "orderNumber": "ORD-100001",
+      "customer": {
+        "fullName": "John Miller",
+        "email": "johnm35@psu.edu"
+      },
+      "billingAddress": {
+        "street": "200 E Fairmount Ave",
+        "city": "State College",
+        "state": "PA",
+        "zip": "16801"
+      },
+      "paymentMethod": {
+        "type": "Credit Card",
+        "cardType": "Visa",
+        "cardLast4": "1111",
+        "expiration": "12/29"
+      },
+      "order": {
+        "items": [
+          { "itemId": "TKT-001", "itemTitle": "General Admission Pass", "itemPrice": 99, "quantity": 1 },
+          { "itemId": "MER-001", "itemTitle": "Connect Summit T-Shirt", "itemPrice": 25, "quantity": 1 },
+          { "itemId": "SWG-001", "itemTitle": "Branded Notebook", "itemPrice": 0, "quantity": 1 }
+        ],
+        "subtotal": 124,
+        "shipping": 0,
+        "total": 124
+      },
+      "submittedAt": "2026-11-08T15:20:00.000Z",
+      "status": "Paid"
+    }
+  ]
+}

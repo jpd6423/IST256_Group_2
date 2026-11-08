@@ -1,0 +1,68 @@
+{
+  "purchasedProducts": [
+    {
+      "itemId": "TKT-001",
+      "itemTitle": "General Admission Pass",
+      "itemCategory": "Ticket",
+      "itemPrice": 99,
+      "itemImage": "images/tkt-001.jpg"
+    },
+    {
+      "itemId": "TKT-003",
+      "itemTitle": "Student Pass",
+      "itemCategory": "Ticket",
+      "itemPrice": 35,
+      "itemImage": "images/tkt-003.jpg"
+    },
+    {
+      "itemId": "MER-001",
+      "itemTitle": "Connect Summit T-Shirt",
+      "itemCategory": "Merchandise",
+      "itemPrice": 25,
+      "itemImage": "images/mer-001.jpg"
+    },
+    {
+      "itemId": "MER-003",
+      "itemTitle": "Insulated Water Bottle",
+      "itemCategory": "Merchandise",
+      "itemPrice": 18.5,
+      "itemImage": "images/mer-003.jpg"
+    },
+    {
+      "itemId": "SWG-001",
+      "itemTitle": "Branded Notebook",
+      "itemCategory": "Swag",
+      "itemPrice": 0,
+      "itemImage": "images/swg-001.jpg"
+    },
+    {
+      "itemId": "SWG-003",
+      "itemTitle": "Tote Bag",
+      "itemCategory": "Swag",
+      "itemPrice": 12.99,
+      "itemImage": "images/swg-003.jpg"
+    }
+  ],
+  "returnRequests": [
+    {
+      "returnId": "RET-100001",
+      "product": {
+        "itemId": "MER-001",
+        "itemTitle": "Connect Summit T-Shirt",
+        "itemCategory": "Merchandise",
+        "itemPrice": 25,
+        "itemImage": "images/mer-001.jpg"
+      },
+      "customer": {
+        "name": "John Miller",
+        "email": "johnm35@psu.edu"
+      },
+      "orderNumber": "ORD-100001",
+      "reason": "Wrong Item",
+      "condition": "New",
+      "comments": "Received a size S instead of M.",
+      "submittedAt": "2026-11-08T16:05:00.000Z",
+      "status": "Received"
+    }
+  ]
+}

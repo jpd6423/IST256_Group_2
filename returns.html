@@ -56,7 +56,7 @@
 
                     <h2 class="h4 mb-4">Select a Product to Return</h2>
 
-                    <!-- Search Products -->
+                    <!-- Search Products (jQuery filter in returns.js) -->
                     <div class="mb-4">
 
                         <label for="productSearch" class="form-label">
@@ -66,11 +66,11 @@
                         <input type="text"
                                class="form-control"
                                id="productSearch"
-                               placeholder="Search by product name or ID">
+                               placeholder="Search by product name, ID, or category">
 
                     </div>
 
-                    <!-- Products Table -->
+                    <!-- Products Table (rows are loaded from returns.json by returns.js) -->
                     <div class="table-responsive">
 
                         <table class="table table-striped align-middle">
@@ -84,73 +84,19 @@
                                 </tr>
                             </thead>
 
-                            <tbody>
-
-                                <!-- Example Product 1 -->
-                                <tr>
-                                    <td>
-                                        <strong>Connect Summit T-Shirt</strong>
-                                        <small class="d-block text-muted">
-                                            MER-001
-                                        </small>
-                                    </td>
-
-                                    <td>Merchandise</td>
-                                    <td>$25.00</td>
-
-                                    <td>
-                                        <input type="radio"
-                                               class="form-check-input"
-                                               name="returnProduct"
-                                               value="MER-001">
-                                    </td>
-                                </tr>
-
-                                <!-- Example Product 2 -->
-                                <tr>
-                                    <td>
-                                        <strong>Branded Notebook</strong>
-                                        <small class="d-block text-muted">
-                                            SWG-001
-                                        </small>
-                                    </td>
-
-                                    <td>Swag</td>
-                                    <td>$0.00</td>
-
-                                    <td>
-                                        <input type="radio"
-                                               class="form-check-input"
-                                               name="returnProduct"
-                                               value="SWG-001">
-                                    </td>
-                                </tr>
-
-                                <!-- Example Product 3 -->
-                                <tr>
-                                    <td>
-                                        <strong>General Admission Pass</strong>
-                                        <small class="d-block text-muted">
-                                            TKT-001
-                                        </small>
-                                    </td>
-
-                                    <td>Ticket</td>
-                                    <td>$99.00</td>
-
-                                    <td>
-                                        <input type="radio"
-                                               class="form-check-input"
-                                               name="returnProduct"
-                                               value="TKT-001">
-                                    </td>
-                                </tr>
-
-                            </tbody>
+                            <tbody id="productTableBody"></tbody>
 
                         </table>
 
                     </div>
+
+                    <!-- Shown by returns.js when the search finds nothing -->
+                    <p class="text-center text-muted d-none" id="noProductsMessage">
+                        No products match your search.
+                    </p>
+
+                    <!-- Shown by returns.js when no product is selected on submit -->
+                    <div id="productError" class="text-danger small d-none"></div>
 
                 </div>
 
@@ -159,7 +105,7 @@
 
                     <h2 class="h4 mb-4">Return Request Details</h2>
 
-                    <form id="returnsForm">
+                    <form id="returnsForm" novalidate>
 
                         <!-- Customer Name -->
                         <div class="mb-3">
@@ -204,7 +150,7 @@
                                    class="form-control"
                                    id="orderNumber"
                                    name="orderNumber"
-                                   placeholder="Enter your order number"
+                                   placeholder="e.g. ORD-100001"
                                    required>
 
                         </div>
@@ -221,7 +167,7 @@
                                     name="returnReason"
                                     required>
 
-                                <option value="" selected disabled>
+                                <option value="" selected>
                                     Select a reason
                                 </option>
 
@@ -261,7 +207,7 @@
                                     name="productCondition"
                                     required>
 
-                                <option value="" selected disabled>
+                                <option value="" selected>
                                     Select product condition
                                 </option>
 
@@ -289,24 +235,22 @@
 
                         </div>
 
-                        <!-- Additional Comments -->
+                        <!-- Additional Comments (required when the reason is "Other") -->
                         <div class="mb-3">
 
                             <label for="returnComments" class="form-label">
                                 Additional Comments
                             </label>
 
-                            <textarea class="form-control"
-                                      id="returnComments"
-                                      name="returnComments"
-                                      rows="4"
-                                      placeholder="Provide additional information about your return">
-                            </textarea>
+                            <textarea class="form-control" id="returnComments" name="returnComments" rows="4" placeholder="Provide additional information about your return"></textarea>
 
                         </div>
 
-                        <!-- Submit Button -->
-                        <button type="button"
+                        <!-- Success / error message from returns.js -->
+                        <div id="returnsStatus" class="alert d-none mt-3" role="alert"></div>
+
+                        <!-- Submit Button (returns.js validates, then sends the AJAX request) -->
+                        <button type="submit"
                                 class="returns-btn w-100 mt-3">
                             Submit Return Request
                         </button>
@@ -324,12 +268,16 @@
 
                     <h2 class="h4 mb-4">Return Summary</h2>
 
+                    <!-- TODO (React): this summary can be rendered by a React component instead.
+                         See the REACT PLACEHOLDER at the bottom of returns.js. -->
+                    <div id="react-return-summary"></div>
+
                     <div class="return-summary-item">
 
                         <div>
                             <strong>Selected Product:</strong>
-                            <p class="text-muted mb-0">
-                                Connect Summit T-Shirt
+                            <p class="text-muted mb-0" id="summaryProduct">
+                                None selected
                             </p>
                         </div>
 
@@ -339,8 +287,8 @@
 
                         <div>
                             <strong>Product Price:</strong>
-                            <p class="text-muted mb-0">
-                                $25.00
+                            <p class="text-muted mb-0" id="summaryPrice">
+                                -
                             </p>
                         </div>
 
@@ -350,7 +298,7 @@
 
                         <div>
                             <strong>Return Status:</strong>
-                            <p class="text-muted mb-0">
+                            <p class="text-muted mb-0" id="summaryStatus">
                                 Not Submitted
                             </p>
                         </div>
@@ -402,6 +350,16 @@
     <footer>
         <p>&copy; 2026 Connect Summit. All Rights Reserved.</p>
     </footer>
+
+    <!-- jQuery (needed by returns.js for search, validation, and AJAX) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- TODO (React): add the React / ReactDOM / Babel script tags here when ready.
+         Copy them from registration.html, then load your component with
+         <script type="text/babel" data-presets="react" src="returnsReact.js"></script>
+         AFTER returns.js so window.returnsApp exists. -->
+
+    <script src="returns.js"></script>
 
 </body>
 

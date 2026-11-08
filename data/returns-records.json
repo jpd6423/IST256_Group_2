@@ -1,0 +1,24 @@
+{
+  "returnRequests": [
+    {
+      "returnId": "RET-100001",
+      "product": {
+        "itemId": "SWG-003",
+        "itemTitle": "Tote Bag",
+        "itemCategory": "Swag",
+        "itemPrice": 12.99,
+        "itemImage": "images/swg-003.jpg"
+      },
+      "customer": {
+        "name": "dawadad",
+        "email": "awdd@dadawd.afsef"
+      },
+      "orderNumber": "ORD-229812",
+      "reason": "Damaged Product",
+      "condition": "New",
+      "comments": "",
+      "submittedAt": "2026-11-08T15:30:31.318Z",
+      "status": "Received"
+    }
+  ]
+}
