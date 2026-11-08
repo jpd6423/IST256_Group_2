@@ -256,32 +256,8 @@
 
                     <h2 class="h4 mb-4">Order Summary</h2>
 
-                    <!-- TODO (React): this block can be rendered by a React component instead.
-                         See the REACT PLACEHOLDER at the bottom of billing.js. -->
+                    <!-- React (script at the bottom of this page) renders items, totals, and billing preview -->
                     <div id="react-order-summary"></div>
-
-                    <!-- billing.js fills this from the saved cart (or a sample order) -->
-                    <div id="orderItems"></div>
-
-                    <hr>
-
-                    <!-- Order Totals -->
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal:</span>
-                        <span id="orderSubtotal">$0.00</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Shipping:</span>
-                        <span id="orderShipping">$0.00</span>
-                    </div>
-
-                    <hr>
-
-                    <div class="d-flex justify-content-between">
-                        <h3 class="h5">Total:</h3>
-                        <h3 class="h5" id="orderTotal">$0.00</h3>
-                    </div>
 
                     <div class="shipping-info mt-4">
 
@@ -316,12 +292,107 @@
     <!-- jQuery (needed by billing.js for validation and AJAX) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <!-- TODO (React): add the React / ReactDOM / Babel script tags here when ready.
-         Copy them from registration.html, then load your component with
-         <script type="text/babel" data-presets="react" src="billingReact.js"></script>
-         AFTER billing.js so window.billingApp exists. -->
-
     <script src="billing.js"></script>
+
+    <!-- React, ReactDOM, and Babel -->
+    <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+
+    <!-- React: Order Summary component -->
+    <script type="text/babel" data-presets="react">
+        const { useState, useEffect } = React;
+
+        function formatMoney(amount) {
+            return "$" + Number(amount).toFixed(2);
+        }
+
+        function OrderSummary() {
+            const [order] = useState(window.billingApp.getOrder());
+
+            const [preview, setPreview] = useState({
+                name: "",
+                email: "",
+                city: "",
+                state: "",
+                cardLast4: ""
+            });
+
+            useEffect(() => {
+                function readForm() {
+                    const card = $("#cardNumber").val().replace(/\D/g, "");
+                    setPreview({
+                        name: $("#fullName").val().trim(),
+                        email: $("#email").val().trim(),
+                        city: $("#city").val().trim(),
+                        state: $("#state").val().trim().toUpperCase(),
+                        cardLast4: card.length >= 4 ? card.slice(-4) : ""
+                    });
+                }
+
+                $("#billingForm").on("input", readForm);
+                window.billingApp.onFormReset = readForm;
+
+                readForm();
+            }, []);
+
+            let location = "-";
+            if (preview.city !== "" || preview.state !== "") {
+                location = preview.city + (preview.state !== "" ? ", " + preview.state : "");
+            }
+
+            return (
+                <div>
+                    {order.items.map(item => (
+                        <div className="order-item" key={item.itemId}>
+                            <div>
+                                <strong>{item.itemTitle}</strong>
+                                <p className="text-muted mb-0">Quantity: {item.quantity}</p>
+                            </div>
+                            <span>{formatMoney(item.itemPrice * item.quantity)}</span>
+                        </div>
+                    ))}
+
+                    <hr />
+
+                    <div className="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>{formatMoney(order.subtotal)}</span>
+                    </div>
+
+                    <div className="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>{formatMoney(order.shipping)}</span>
+                    </div>
+
+                    <hr />
+
+                    <div className="d-flex justify-content-between">
+                        <h3 className="h5">Total:</h3>
+                        <h3 className="h5">{formatMoney(order.total)}</h3>
+                    </div>
+
+                    <div className="mt-4 p-3 border rounded bg-light">
+                        <h3 className="h6">Billing Preview</h3>
+                        <p className="mb-1"><strong>Name:</strong> {preview.name || "-"}</p>
+                        <p className="mb-1"><strong>Email:</strong> {preview.email || "-"}</p>
+                        <p className="mb-1"><strong>Location:</strong> {location}</p>
+                        <p className="mb-0"><strong>Card:</strong> {preview.cardLast4 ? "ending in " + preview.cardLast4 : "-"}</p>
+                    </div>
+                </div>
+            );
+        }
+
+        $(function () {
+            const root = ReactDOM.createRoot(document.getElementById("react-order-summary"));
+            root.render(<OrderSummary />);
+        });
+    </script>
+
+</body>
+
+
+</html>
 
 </body>
 

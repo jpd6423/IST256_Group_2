@@ -268,42 +268,8 @@
 
                     <h2 class="h4 mb-4">Return Summary</h2>
 
-                    <!-- TODO (React): this summary can be rendered by a React component instead.
-                         See the REACT PLACEHOLDER at the bottom of returns.js. -->
+                    <!-- React (script at the bottom of this page) renders the selected product, price, and status -->
                     <div id="react-return-summary"></div>
-
-                    <div class="return-summary-item">
-
-                        <div>
-                            <strong>Selected Product:</strong>
-                            <p class="text-muted mb-0" id="summaryProduct">
-                                None selected
-                            </p>
-                        </div>
-
-                    </div>
-
-                    <div class="return-summary-item">
-
-                        <div>
-                            <strong>Product Price:</strong>
-                            <p class="text-muted mb-0" id="summaryPrice">
-                                -
-                            </p>
-                        </div>
-
-                    </div>
-
-                    <div class="return-summary-item">
-
-                        <div>
-                            <strong>Return Status:</strong>
-                            <p class="text-muted mb-0" id="summaryStatus">
-                                Not Submitted
-                            </p>
-                        </div>
-
-                    </div>
 
                     <hr>
 
@@ -354,12 +320,89 @@
     <!-- jQuery (needed by returns.js for search, validation, and AJAX) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <!-- TODO (React): add the React / ReactDOM / Babel script tags here when ready.
-         Copy them from registration.html, then load your component with
-         <script type="text/babel" data-presets="react" src="returnsReact.js"></script>
-         AFTER returns.js so window.returnsApp exists. -->
-
     <script src="returns.js"></script>
+
+    <!-- React, ReactDOM, and Babel -->
+    <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+
+    <!-- React: Return Summary component -->
+    <script type="text/babel" data-presets="react">
+        const { useState, useEffect } = React;
+
+        function formatMoney(amount) {
+            return "$" + Number(amount).toFixed(2);
+        }
+
+        function ReturnSummary() {
+            const [product, setProduct] = useState(window.returnsApp.getSelectedProduct());
+            const [submittedId, setSubmittedId] = useState("");
+
+            useEffect(() => {
+                window.returnsApp.onUpdate = function (newSubmittedId) {
+                    setProduct(window.returnsApp.getSelectedProduct());
+                    setSubmittedId(newSubmittedId);
+                };
+            }, []);
+
+            return (
+                <div>
+                    <div className="return-summary-item">
+                        <div className="d-flex align-items-center">
+                            {product && (
+                                <img
+                                    src={product.itemImage}
+                                    alt={product.itemTitle}
+                                    width="64"
+                                    height="64"
+                                    className="rounded me-3"
+                                />
+                            )}
+                            <div>
+                                <strong>Selected Product:</strong>
+                                <p className="text-muted mb-0">
+                                    {product ? product.itemTitle : "None selected"}
+                                </p>
+                                {product && (
+                                    <small className="text-muted">
+                                        {product.itemId} · {product.itemCategory}
+                                    </small>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="return-summary-item">
+                        <div>
+                            <strong>Product Price:</strong>
+                            <p className="text-muted mb-0">
+                                {product ? formatMoney(product.itemPrice) : "-"}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="return-summary-item">
+                        <div>
+                            <strong>Return Status:</strong>
+                            <p className="mb-0">
+                                {submittedId ? (
+                                    <span className="badge bg-success">Submitted ({submittedId})</span>
+                                ) : (
+                                    <span className="badge bg-secondary">Not Submitted</span>
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        $(function () {
+            const root = ReactDOM.createRoot(document.getElementById("react-return-summary"));
+            root.render(<ReturnSummary />);
+        });
+    </script>
 
 </body>
 

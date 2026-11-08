@@ -386,7 +386,7 @@ $(document).ready(function () {
     // ---------- Start ----------
 
     loadOrder();
-    renderOrderSummary();
+    
 
     // ==========================================================
     // REACT PLACEHOLDER

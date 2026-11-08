@@ -134,14 +134,9 @@ $(document).ready(function () {
 
     // Right-hand Return Summary box
     function updateSummary(submittedId) {
-        if (selectedProduct === null) {
-            $("#summaryProduct").text("None selected");
-            $("#summaryPrice").text("-");
-        } else {
-            $("#summaryProduct").text(selectedProduct.itemTitle);
-            $("#summaryPrice").text(formatMoney(selectedProduct.itemPrice));
+        if (window.returnsApp && window.returnsApp.onUpdate) {
+            window.returnsApp.onUpdate(submittedId || "");
         }
-        $("#summaryStatus").text(submittedId ? "Submitted (" + submittedId + ")" : "Not Submitted");
     }
 
     // ---------- Validation rules ----------
