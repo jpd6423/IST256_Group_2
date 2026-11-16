@@ -28,7 +28,35 @@ app.get("/api/health", function (req, res) {
     });
 });
 
+
+app.use("/api/attendees", require("./routes/attendees"));
+app.use("/api/registrations", require("./routes/registrations"));
+
+
 // TODO (later): app.use("/api/products", require("./routes/products")); etc.
+
+
+app.use(function (err, req, res, next) {
+    // Schema validation failed (bad email, missing field, etc.)
+    if (err.name === "ValidationError") {
+        const errors = {};
+        for (const field in err.errors) {
+            errors[field.split(".")[0]] = err.errors[field].message;
+        }
+        return res.status(400).json({ error: "Validation failed.", errors: errors });
+    }
+    // Unique index violated (email already registered)
+    if (err.code === 11000) {
+        const field = Object.keys(err.keyValue || {})[0] || "field";
+        return res.status(409).json({
+            error: "That " + field + " is already registered.",
+            errors: { [field]: "This " + field + " is already in use." }
+        });
+    }
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong on the server." });
+});
+
 
 // ---------- Connect to MongoDB, then start the server ----------
 mongoose
