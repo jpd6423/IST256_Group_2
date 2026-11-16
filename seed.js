@@ -1,59 +1,76 @@
-// seed.js - loads the sample attendees and registrations into MongoDB
-// Run once with:  node seed.js
-// Safe to run again: it updates existing records instead of duplicating them.
+// seed.js - loads attendees and registrations from the JSON files into MongoDB
+//   Signup data:        public/data.json          -> attendees collection
+//   Registration data:  public/registration.json  -> registrations collection
+// Run with:  node seed.js
+// Safe to run again: existing records are updated instead of duplicated.
 require("dotenv").config();
+const fs = require("fs");
+const path = require("path");
 const mongoose = require("mongoose");
 const Attendee = require("./models/Attendee");
 const Registration = require("./models/Registration");
 
-const attendees = [
-    { name: "John Miller",  age: 20, email: "johnm35@psu.edu",      address: "200 E Fairmount Ave, State College, PA" },
-    { name: "Alex Johnson", age: 31, email: "alexjohn8@gmail.com",  address: "45 Maple St, Harrisburg, PA" },
-    { name: "Marcus Lee",   age: 18, email: "marcus.lee@gmail.com", address: "800 N 3rd St, Philadelphia, PA" }
-];
-
-const registrations = [
-    {
-        confirmationNumber: "CS26-100001", name: "John Miller", email: "johnm35@psu.edu",
-        participation: "In-Person", location: "Philadelphia, PA", date: "November 15, 2026",
-        sessions: [
-            { name: "Opening Keynote", time: "9:00 AM - 10:00 AM" },
-            { name: "Panel Discussion", time: "1:00 PM - 2:30 PM" }
-        ]
-    },
-    {
-        confirmationNumber: "CS26-100002", name: "Alex Johnson", email: "alexjohn8@gmail.com",
-        participation: "Virtual", location: "Online (stream link sent by email)", date: "November 15, 2026",
-        sessions: [
-            { name: "Networking Workshop", time: "10:30 AM - 12:00 PM" }
-        ]
-    },
-    {
-        confirmationNumber: "CS26-100003", name: "Marcus Lee", email: "marcus.lee@gmail.com",
-        participation: "VIP", location: "Philadelphia, PA", date: "November 15, 2026",
-        sessions: [
-            { name: "Opening Keynote", time: "9:00 AM - 10:00 AM" },
-            { name: "Networking Workshop", time: "10:30 AM - 12:00 PM" },
-            { name: "Panel Discussion", time: "1:00 PM - 2:30 PM" },
-            { name: "Closing Social", time: "3:30 PM - 5:00 PM" }
-        ]
+// Read a JSON file and return its "registrations" array
+function readJson(fileName) {
+    const filePath = path.join(__dirname, "public", fileName);
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    if (!Array.isArray(data.registrations)) {
+        throw new Error(fileName + " must have a \"registrations\" array.");
     }
-];
+    return data.registrations;
+}
 
 async function seed() {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to MongoDB: " + mongoose.connection.name);
 
+    // ---------- Attendees (from data.json) ----------
+    const attendees = readJson("data.json");
+    let attendeeCount = 0;
+
     for (const a of attendees) {
-        await Attendee.findOneAndUpdate({ email: a.email }, a, { upsert: true, runValidators: true });
+        const record = {
+            name: a.name,
+            age: a.age,
+            email: String(a.email).toLowerCase(),
+            address: a.address
+        };
+        try {
+            // Match by email so running this twice doesn't create duplicates
+            await Attendee.findOneAndUpdate({ email: record.email }, record,
+                { upsert: true, runValidators: true });
+            attendeeCount++;
+        } catch (error) {
+            console.log("Skipped attendee " + a.email + ": " + error.message);
+        }
     }
-    console.log("Seeded " + attendees.length + " attendees");
+    console.log("Loaded " + attendeeCount + " of " + attendees.length + " attendees from data.json");
+
+    // ---------- Registrations (from registration.json) ----------
+    const registrations = readJson("registration.json");
+    let registrationCount = 0;
 
     for (const r of registrations) {
-        await Registration.findOneAndUpdate(
-            { confirmationNumber: r.confirmationNumber }, r, { upsert: true, runValidators: true });
+        const record = {
+            confirmationNumber: r.confirmationNumber,
+            name: r.name,
+            email: r.email,
+            participation: r.participation,
+            location: r.location,
+            date: r.date,
+            sessions: r.sessions
+        };
+        try {
+            // Match by confirmation number so running this twice doesn't duplicate
+            await Registration.findOneAndUpdate(
+                { confirmationNumber: record.confirmationNumber }, record,
+                { upsert: true, runValidators: true });
+            registrationCount++;
+        } catch (error) {
+            console.log("Skipped registration " + r.confirmationNumber + ": " + error.message);
+        }
     }
-    console.log("Seeded " + registrations.length + " registrations");
+    console.log("Loaded " + registrationCount + " of " + registrations.length + " registrations from registration.json");
 
     await mongoose.disconnect();
 }
