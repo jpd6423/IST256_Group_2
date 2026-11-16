@@ -31,6 +31,8 @@ app.get("/api/health", function (req, res) {
 
 app.use("/api/attendees", require("./routes/attendees"));
 app.use("/api/registrations", require("./routes/registrations"));
+app.use("/api/billing", require("./routes/billing"));
+app.use("/api/returns", require("./routes/returns"));
 
 
 // TODO (later): app.use("/api/products", require("./routes/products")); etc.

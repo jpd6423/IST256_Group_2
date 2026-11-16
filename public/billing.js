@@ -5,17 +5,41 @@
  *   or from a sample order if no cart was saved.
  * - Validates every field before submission.
  * - Builds the billing JSON (see billing.json for the shape) and sends it with
- *   jQuery AJAX to the Node backend (server.js).
+ *   fetch() (AJAX) to the Express + MongoDB backend: POST /api/billing.
+ *   The order is saved in the "billings" collection.
  *
  * SECURITY NOTE: the full card number and CVV are validated here but are NEVER
  * put into the JSON or sent to the server. Only the card type and last 4 digits go out.
  *
- * Requires jQuery to be loaded before this file. Open with Live Server.
+ * Requires jQuery to be loaded before this file.
+ * Run "node server.js" and open http://localhost:3000/billing.html
  */
+
+// Our Express + MongoDB REST API (served by server.js)
+const BILLING_API = "/api/billing";
+
+// ==========================================
+// fetch() helper: sends/receives JSON, throws on errors
+// (also used by the React Order History in billing.html)
+// ==========================================
+async function api(url, method = "GET", body) {
+    const options = { method: method, headers: {} };
+    if (body !== undefined) {
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify(body);
+    }
+    const response = await fetch(url, options);
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        // Server sends { error: "...", errors: { field: "message" } }
+        const details = data.errors ? Object.values(data.errors).join(" ") : "";
+        throw new Error((data.error || "Request failed.") + (details ? " " + details : ""));
+    }
+    return data;
+}
 
 $(document).ready(function () {
 
-    const API_URL = "http://localhost:3000/api/billing";
     const CART_STORAGE_KEY = "checkoutCart";   // written by cart.js at checkout
     const LAST_ORDER_KEY = "lastBillingOrder"; // confirmation info for the page / returns
 
@@ -314,9 +338,9 @@ $(document).ready(function () {
         };
     }
 
-    // ---------- AJAX: send the JSON to the Node backend ----------
+    // ---------- AJAX (fetch): send the JSON to the backend -> MongoDB ----------
 
-    function sendBilling(billingData) {
+    async function sendBilling(billingData) {
         const button = $("#billingForm .billing-btn");
         button.prop("disabled", true).text("Processing...");
         showStatus("Sending your billing details...", "info");
@@ -324,44 +348,39 @@ $(document).ready(function () {
         console.log("Billing JSON sent to the REST API:");
         console.log(JSON.stringify(billingData, null, 2));
 
-        $.ajax({
-            url: API_URL,
-            type: "POST",
-            contentType: "application/json",
-            dataType: "json",
-            data: JSON.stringify(billingData),
+        try {
+            const saved = await api(BILLING_API, "POST", billingData);
 
-            success: function (response) {
-                showStatus("Purchase complete! Your order number is " + response.orderNumber +
-                    ". Keep it for returns.", "success");
+            showStatus("Purchase complete! Your order number is " + saved.orderNumber +
+                ". Keep it for returns.", "success");
 
-                try {
-                    localStorage.setItem(LAST_ORDER_KEY, JSON.stringify({
-                        orderNumber: response.orderNumber,
-                        email: billingData.customer.email,
-                        items: billingData.order.items
-                    }));
-                    localStorage.removeItem(CART_STORAGE_KEY);
-                } catch (e) {
-                    console.error(e);
-                }
-
-                $("#billingForm")[0].reset();
-                $("#billingForm .is-valid, #billingForm .is-invalid").removeClass("is-valid is-invalid");
-            },
-
-            error: function (xhr) {
-                let message = "Unable to process your order. Is the Node server running (npm start)?";
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    message = "The server rejected the order: " + xhr.responseJSON.errors.join(" ");
-                }
-                showStatus(message, "danger");
-            },
-
-            complete: function () {
-                button.prop("disabled", false).text("Complete Purchase");
+            try {
+                localStorage.setItem(LAST_ORDER_KEY, JSON.stringify({
+                    orderNumber: saved.orderNumber,
+                    email: saved.customer.email,
+                    items: saved.order.items
+                }));
+                localStorage.removeItem(CART_STORAGE_KEY);
+            } catch (e) {
+                console.error(e);
             }
-        });
+
+            $("#billingForm")[0].reset();
+            $("#billingForm .is-valid, #billingForm .is-invalid").removeClass("is-valid is-invalid");
+            if (window.billingApp.onFormReset) window.billingApp.onFormReset();
+
+            // Tell the React Order History to show the new order
+            if (window.billingApp.onOrderSaved) window.billingApp.onOrderSaved(saved);
+
+        } catch (error) {
+            let message = error.message;
+            if (error instanceof TypeError) {
+                message = "Unable to reach the server. Is it running (node server.js)?";
+            }
+            showStatus(message, "danger");
+        } finally {
+            button.prop("disabled", false).text("Complete Purchase");
+        }
     }
 
     // ---------- Submit ----------

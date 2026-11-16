@@ -4,15 +4,40 @@
  * - Loads purchased products from returns.json (name, image, price) with $.getJSON.
  * - jQuery search filters the product list as the customer types.
  * - Validates the return details before submission.
- * - Builds the returns JSON and sends it with jQuery AJAX to the Node backend (server.js).
+ * - Builds the returns JSON and sends it with fetch() (AJAX) to the Express + MongoDB
+ *   backend: POST /api/returns. The request is saved in the "returns" collection.
+ *   The server checks that the order number exists in the "billings" collection.
  *
- * Requires jQuery to be loaded before this file. Open with Live Server
- * (getJSON does not work from file://).
+ * Requires jQuery to be loaded before this file.
+ * Run "node server.js" and open http://localhost:3000/returns.html
  */
+
+// Our Express + MongoDB REST API (served by server.js)
+const RETURNS_API = "/api/returns";
+
+// ==========================================
+// fetch() helper: sends/receives JSON, throws on errors
+// (also used by the React Return History in returns.html)
+// ==========================================
+async function api(url, method = "GET", body) {
+    const options = { method: method, headers: {} };
+    if (body !== undefined) {
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify(body);
+    }
+    const response = await fetch(url, options);
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        // Server sends { error: "...", errors: { field: "message" } }
+        const error = new Error(data.error || "Request failed.");
+        error.fieldErrors = data.errors || {};
+        throw error;
+    }
+    return data;
+}
 
 $(document).ready(function () {
 
-    const API_URL = "http://localhost:3000/api/returns";
     const DATA_FILE = "returns.json";
     const LAST_ORDER_KEY = "lastBillingOrder"; // saved by billing.js after a purchase
 
@@ -266,9 +291,9 @@ $(document).ready(function () {
         };
     }
 
-    // ---------- AJAX: send the JSON to the Node backend ----------
+    // ---------- AJAX (fetch): send the JSON to the backend -> MongoDB ----------
 
-    function sendReturn(returnData) {
+    async function sendReturn(returnData) {
         const button = $("#returnsForm .returns-btn");
         button.prop("disabled", true).text("Submitting...");
         showStatus("Sending your return request...", "info");
@@ -276,35 +301,37 @@ $(document).ready(function () {
         console.log("Returns JSON sent to the REST API:");
         console.log(JSON.stringify(returnData, null, 2));
 
-        $.ajax({
-            url: API_URL,
-            type: "POST",
-            contentType: "application/json",
-            dataType: "json",
-            data: JSON.stringify(returnData),
+        try {
+            const saved = await api(RETURNS_API, "POST", returnData);
 
-            success: function (response) {
-                showStatus("Return request " + response.returnId + " received. Status: " + response.status + ".", "success");
-                updateSummary(response.returnId);
+            showStatus("Return request " + saved.returnId + " received. Status: " + saved.status + ".", "success");
+            updateSummary(saved.returnId);
 
-                $("#returnsForm")[0].reset();
-                $("#returnsForm .is-valid, #returnsForm .is-invalid").removeClass("is-valid is-invalid");
-                selectedProduct = null;
-                displayProducts();
-            },
+            $("#returnsForm")[0].reset();
+            $("#returnsForm .is-valid, #returnsForm .is-invalid").removeClass("is-valid is-invalid");
+            selectedProduct = null;
+            displayProducts();
 
-            error: function (xhr) {
-                let message = "Unable to submit your return. Is the Node server running (npm start)?";
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    message = "The server rejected the return: " + xhr.responseJSON.errors.join(" ");
-                }
-                showStatus(message, "danger");
-            },
+            // Tell the React Return History to show the new request
+            if (window.returnsApp.onReturnSaved) window.returnsApp.onReturnSaved(saved);
 
-            complete: function () {
-                button.prop("disabled", false).text("Submit Return Request");
+        } catch (error) {
+            if (error instanceof TypeError) {
+                showStatus("Unable to reach the server. Is it running (node server.js)?", "danger");
+                return;
             }
-        });
+
+            // Show the server's message under the matching field (e.g. unknown order number)
+            const fieldErrors = error.fieldErrors || {};
+            if (fieldErrors.orderNumber) {
+                $("#orderNumber").addClass("is-invalid").removeClass("is-valid");
+                $("#orderNumberError").text(fieldErrors.orderNumber);
+            }
+            const details = Object.values(fieldErrors).join(" ");
+            showStatus(error.message + (details ? " " + details : ""), "danger");
+        } finally {
+            button.prop("disabled", false).text("Submit Return Request");
+        }
     }
 
     // ---------- Submit ----------
