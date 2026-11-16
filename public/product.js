@@ -1,7 +1,9 @@
-// Products loaded from MongoDB
+
+
+// Product data loaded from MongoDB
 let items = [];
 
-// MongoDB API
+// Node.js API endpoint
 const PRODUCT_API = "/api/products";
 
 // Allowed dropdown values
@@ -27,10 +29,12 @@ const MAX_INFO_LENGTH = 50;
 const MAX_PRICE = 10000;
 const ID_PATTERN = /^[A-Za-z]{2,4}-\d{3}$/;
 
-// Tracks the item currently being edited
+// Edit tracking
 let editingMongoId = null;
 let editingItemId = "";
 let saving = false;
+
+
 
 const form = document.getElementById("productForm");
 const tableBody = document.getElementById("itemsTableBody");
@@ -52,38 +56,54 @@ function formatPrice(price) {
 }
 
 function makeCell(text) {
-    let td = document.createElement("td");
+    const td = document.createElement("td");
     td.textContent = text;
     return td;
 }
 
+async function apiRequest(url, options = {}) {
+
+    const response = await fetch(url, options);
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            result.error || "Database request failed."
+        );
+    }
+
+    return result;
+}
+
+
+
 async function loadProductsFromMongoDB() {
 
     try {
-        const response = await fetch(PRODUCT_API);
 
-        if (!response.ok) {
-            throw new Error("Unable to load products from MongoDB.");
-        }
-
-        items = await response.json();
+        items = await apiRequest(PRODUCT_API);
 
         renderTable();
 
         console.log("Products loaded from MongoDB:", items);
 
     } catch (error) {
-        console.error("MongoDB loading error:", error);
+
+        console.error(error);
 
         alert(
-            "Could not load products. Make sure Node.js and MongoDB are running."
+            "Unable to load products. Check your Node.js server."
         );
+
     }
 }
 
+
+
 async function addProductToMongoDB(product) {
 
-    const response = await fetch(PRODUCT_API, {
+    return await apiRequest(PRODUCT_API, {
 
         method: "POST",
 
@@ -94,24 +114,12 @@ async function addProductToMongoDB(product) {
         body: JSON.stringify(product)
 
     });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-        throw new Error(
-            result.error || "Unable to add product."
-        );
-    }
-
-    console.log("Product added to MongoDB:", result);
-
-    return result;
 }
 
 
 async function updateProductInMongoDB(mongoId, product) {
 
-    const response = await fetch(
+    return await apiRequest(
         PRODUCT_API + "/" + mongoId,
         {
             method: "PUT",
@@ -123,42 +131,20 @@ async function updateProductInMongoDB(mongoId, product) {
             body: JSON.stringify(product)
         }
     );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-        throw new Error(
-            result.error || "Unable to update product."
-        );
-    }
-
-    console.log("Product updated in MongoDB:", result);
-
-    return result;
 }
 
 
 async function deleteProductFromMongoDB(mongoId) {
 
-    const response = await fetch(
+    return await apiRequest(
         PRODUCT_API + "/" + mongoId,
         {
             method: "DELETE"
         }
     );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-        throw new Error(
-            result.error || "Unable to delete product."
-        );
-    }
-
-    console.log("Product deleted from MongoDB:", result);
-
-    return result;
 }
+
+
 
 function renderTable() {
 
@@ -166,87 +152,93 @@ function renderTable() {
 
     for (let i = 0; i < items.length; i++) {
 
-        let item = items[i];
-
-        let row = document.createElement("tr");
+        const item = items[i];
+        const row = document.createElement("tr");
 
         row.appendChild(makeCell(item.itemId));
         row.appendChild(makeCell(item.itemTitle));
         row.appendChild(makeCell(item.itemCategory));
         row.appendChild(makeCell(item.itemUnit));
-        row.appendChild(makeCell(formatPrice(item.itemPrice)));
 
-        if (!item.itemInfo) {
-            row.appendChild(makeCell("—"));
-        } else {
-            row.appendChild(makeCell(item.itemInfo));
-        }
+        row.appendChild(
+            makeCell(formatPrice(item.itemPrice))
+        );
 
-        // Edit and Delete buttons
-        let actions = document.createElement("td");
+        row.appendChild(
+            makeCell(item.itemInfo || "—")
+        );
+
+        // Action buttons
+        const actions = document.createElement("td");
+
         actions.className = "text-end";
 
-        let editButton = document.createElement("button");
+        const editButton = document.createElement("button");
 
         editButton.type = "button";
-        editButton.textContent = "Edit";
         editButton.className =
             "btn btn-primary btn-sm me-2 edit-btn";
 
-        editButton.setAttribute("data-id", item.itemId);
+        editButton.textContent = "Edit";
 
-        let deleteButton = document.createElement("button");
+        editButton.dataset.id = item.itemId;
+
+        const deleteButton = document.createElement("button");
 
         deleteButton.type = "button";
-        deleteButton.textContent = "Delete";
         deleteButton.className =
             "btn btn-danger btn-sm delete-btn";
 
-        deleteButton.setAttribute("data-id", item.itemId);
+        deleteButton.textContent = "Delete";
+
+        deleteButton.dataset.id = item.itemId;
 
         actions.appendChild(editButton);
         actions.appendChild(deleteButton);
 
         row.appendChild(actions);
+
         tableBody.appendChild(row);
     }
 
     itemCount.textContent = items.length;
 
-    if (items.length === 0) {
-        emptyMessage.classList.remove("d-none");
-    } else {
-        emptyMessage.classList.add("d-none");
-    }
-
-    // Keep search filtering after table updates
     applySearch();
 }
 
 
+
 function applySearch() {
 
-    let searchText = $("#searchInput").val().trim().toLowerCase();
+    const searchText =
+        $("#searchInput").val().trim().toLowerCase();
 
     let visibleCount = 0;
 
     $("#itemsTableBody tr").each(function () {
 
-        let rowText = $(this).text().toLowerCase();
+        const rowText = $(this).text().toLowerCase();
 
         if (rowText.includes(searchText)) {
+
             $(this).show();
             visibleCount++;
+
         } else {
+
             $(this).hide();
+
         }
     });
 
-    if (items.length > 0) {
-        $("#emptyMessage").toggleClass(
-            "d-none",
-            visibleCount > 0
-        );
+    if (visibleCount === 0) {
+
+        emptyMessage.classList.remove("d-none");
+
+    } else {
+
+        emptyMessage.classList.add("d-none");
+
     }
 }
 
@@ -256,6 +248,7 @@ $("#searchInput").on("input", applySearch);
 function showError(fieldId, message) {
 
     const field = document.getElementById(fieldId);
+
     const errorElement =
         document.getElementById(fieldId + "Error");
 
@@ -269,6 +262,7 @@ function showError(fieldId, message) {
 function clearError(fieldId) {
 
     const field = document.getElementById(fieldId);
+
     const errorElement =
         document.getElementById(fieldId + "Error");
 
@@ -281,68 +275,65 @@ function clearError(fieldId) {
 
 function clearAllErrors() {
 
-    for (let i = 0; i < fieldIds.length; i++) {
-        clearError(fieldIds[i]);
-    }
+    fieldIds.forEach(function (id) {
+        clearError(id);
+    });
 }
 
-// Check for duplicate product IDs
+
 function idExists(id, editingId) {
 
-    for (let i = 0; i < items.length; i++) {
+    return items.some(function (item) {
 
-        let sameId =
-            items[i].itemId.toUpperCase() === id.toUpperCase();
+        const sameId =
+            item.itemId.toUpperCase() === id.toUpperCase();
 
-        let isItemBeingEdited =
+        const isEditingItem =
             editingId &&
-            items[i].itemId.toUpperCase() ===
+            item.itemId.toUpperCase() ===
                 editingId.toUpperCase();
 
-        if (sameId && !isItemBeingEdited) {
-            return true;
-        }
-    }
-
-    return false;
+        return sameId && !isEditingItem;
+    });
 }
 
-// Validate complete form
-function validateForm(editingId) {
+
+
+function validateForm(editingId = "") {
 
     let isValid = true;
 
     clearAllErrors();
 
-    let id =
-        document.getElementById("itemId").value.trim().toUpperCase();
+    const id =
+        $("#itemId").val().trim().toUpperCase();
 
-    let title =
-        document.getElementById("itemTitle").value.trim();
+    const title =
+        $("#itemTitle").val().trim();
 
-    let category =
-        document.getElementById("itemCategory").value;
+    const category =
+        $("#itemCategory").val();
 
-    let unit =
-        document.getElementById("itemUnit").value;
+    const unit =
+        $("#itemUnit").val();
 
-    let priceText =
-        document.getElementById("itemPrice").value.trim();
+    const priceText =
+        $("#itemPrice").val().trim();
 
-    let info =
-        document.getElementById("itemInfo").value.trim();
+    const info =
+        $("#itemInfo").val().trim();
 
-    // Item ID validation
+    // Item ID
     if (id === "") {
 
-        showError("itemId", "Item ID required.");
+        showError("itemId", "Item ID is required.");
         isValid = false;
 
     } else if (!ID_PATTERN.test(id)) {
 
         showError(
             "itemId",
-            "Use 2-4 letters, a dash, then 3 digits (e.g. TKT-001)."
+            "Use an ID such as TKT-001 or MER-001."
         );
 
         isValid = false;
@@ -351,38 +342,25 @@ function validateForm(editingId) {
 
         showError(
             "itemId",
-            "An item with this ID already exists."
+            "This product ID already exists."
         );
 
         isValid = false;
     }
 
-    // Product title validation
-    if (title === "") {
-
-        showError("itemTitle", "Item title required.");
-        isValid = false;
-
-    } else if (title.length < MIN_TITLE_LENGTH) {
+    // Product title
+    if (title.length < MIN_TITLE_LENGTH ||
+        title.length > MAX_TITLE_LENGTH) {
 
         showError(
             "itemTitle",
-            "Item title must be at least 3 characters."
-        );
-
-        isValid = false;
-
-    } else if (title.length > MAX_TITLE_LENGTH) {
-
-        showError(
-            "itemTitle",
-            "Item title must be 60 characters or fewer."
+            "Title must be between 3 and 60 characters."
         );
 
         isValid = false;
     }
 
-    // Category validation
+    // Category
     if (!ALLOWED_CATEGORIES.includes(category)) {
 
         showError(
@@ -393,7 +371,7 @@ function validateForm(editingId) {
         isValid = false;
     }
 
-    // Unit validation
+    // Unit
     if (!ALLOWED_UNITS.includes(unit)) {
 
         showError(
@@ -404,47 +382,35 @@ function validateForm(editingId) {
         isValid = false;
     }
 
-    // Price validation
+    // Price
     if (priceText === "") {
 
-        showError("itemPrice", "Price required.");
+        showError("itemPrice", "Price is required.");
         isValid = false;
 
-    } else {
+    } else if (!/^\d+(\.\d{1,2})?$/.test(priceText)) {
 
-        let price = Number(priceText);
+        showError(
+            "itemPrice",
+            "Enter a valid price with at most 2 decimal places."
+        );
 
-        if (!Number.isFinite(price)) {
+        isValid = false;
 
-            showError("itemPrice", "Price must be a number.");
-            isValid = false;
+    } else if (
+        Number(priceText) < 0 ||
+        Number(priceText) > MAX_PRICE
+    ) {
 
-        } else if (price < 0) {
+        showError(
+            "itemPrice",
+            "Price must be between $0 and $10,000."
+        );
 
-            showError("itemPrice", "Price cannot be negative.");
-            isValid = false;
-
-        } else if (price > MAX_PRICE) {
-
-            showError(
-                "itemPrice",
-                "Price cannot exceed $10,000."
-            );
-
-            isValid = false;
-
-        } else if (!/^\d+(\.\d{1,2})?$/.test(priceText)) {
-
-            showError(
-                "itemPrice",
-                "Price can have at most 2 decimal places."
-            );
-
-            isValid = false;
-        }
+        isValid = false;
     }
 
-    // Additional info validation
+    // Additional information
     if (info.length > MAX_INFO_LENGTH) {
 
         showError(
@@ -462,32 +428,28 @@ function validateForm(editingId) {
 function getProductData() {
 
     return {
+
         itemId:
-            document.getElementById("itemId")
-                .value.trim().toUpperCase(),
+            $("#itemId").val().trim().toUpperCase(),
 
         itemTitle:
-            document.getElementById("itemTitle")
-                .value.trim(),
+            $("#itemTitle").val().trim(),
 
         itemCategory:
-            document.getElementById("itemCategory")
-                .value,
+            $("#itemCategory").val(),
 
         itemUnit:
-            document.getElementById("itemUnit")
-                .value,
+            $("#itemUnit").val(),
 
         itemPrice:
-            Number(
-                document.getElementById("itemPrice").value
-            ),
+            Number($("#itemPrice").val()),
 
         itemInfo:
-            document.getElementById("itemInfo")
-                .value.trim()
+            $("#itemInfo").val().trim()
+
     };
 }
+
 
 
 function resetEditForm() {
@@ -516,35 +478,38 @@ form.addEventListener("submit", async function (event) {
 
     if (saving) return;
 
-    let currentEditingId = editingItemId;
-
-    if (!validateForm(currentEditingId)) {
+    if (!validateForm(editingItemId)) {
         return;
     }
 
     const productData = getProductData();
 
     saving = true;
+
     $("#submitBtn").prop("disabled", true);
 
     try {
 
         if (editingMongoId === null) {
 
-            // CREATE NEW PRODUCT
+            // CREATE
             await addProductToMongoDB(productData);
 
-            alert("Product added to MongoDB successfully!");
+            alert(
+                "Product added to MongoDB successfully!"
+            );
 
         } else {
 
-            // UPDATE EXISTING PRODUCT
+            // UPDATE
             await updateProductInMongoDB(
                 editingMongoId,
                 productData
             );
 
-            alert("Product updated in MongoDB successfully!");
+            alert(
+                "Product updated in MongoDB successfully!"
+            );
         }
 
         resetEditForm();
@@ -555,17 +520,17 @@ form.addEventListener("submit", async function (event) {
 
         console.error(error);
 
-        alert(
-            "Unable to save product: " + error.message
-        );
+        alert("Unable to save product: " + error.message);
 
     } finally {
 
         saving = false;
+
         $("#submitBtn").prop("disabled", false);
 
     }
 });
+
 
 
 $("#itemsTableBody").on(
@@ -575,18 +540,17 @@ $("#itemsTableBody").on(
 
         if (saving) return;
 
-        let id = $(this).attr("data-id");
+        const id = $(this).attr("data-id");
 
-        let item = items.find(function (product) {
-            return product.itemId === id;
-        });
+        const item = items.find(
+            product => product.itemId === id
+        );
 
         if (!item) {
-            alert("Item not found.");
+            alert("Product not found.");
             return;
         }
 
-        // Store MongoDB document ID
         editingMongoId = item._id;
         editingItemId = item.itemId;
 
@@ -613,6 +577,8 @@ $("#itemsTableBody").on(
     }
 );
 
+
+
 $("#itemsTableBody").on(
     "click",
     ".delete-btn",
@@ -620,11 +586,11 @@ $("#itemsTableBody").on(
 
         if (saving) return;
 
-        let id = $(this).attr("data-id");
+        const id = $(this).attr("data-id");
 
-        let item = items.find(function (product) {
-            return product.itemId === id;
-        });
+        const item = items.find(
+            product => product.itemId === id
+        );
 
         if (!item) {
             alert("Product not found.");
@@ -632,7 +598,7 @@ $("#itemsTableBody").on(
         }
 
         if (!confirm(
-            "Are you sure you want to delete this item?"
+            "Are you sure you want to delete this product?"
         )) {
             return;
         }
@@ -641,7 +607,6 @@ $("#itemsTableBody").on(
 
         try {
 
-            // DELETE FROM MONGODB
             await deleteProductFromMongoDB(item._id);
 
             if (editingItemId === id) {
@@ -670,6 +635,7 @@ $("#itemsTableBody").on(
     }
 );
 
+
 $("#cancelBtn").on("click", function () {
 
     if (!saving) {
@@ -678,17 +644,18 @@ $("#cancelBtn").on("click", function () {
 });
 
 
-for (let i = 0; i < fieldIds.length; i++) {
+fieldIds.forEach(function (id) {
 
-    let field = document.getElementById(fieldIds[i]);
+    const field = document.getElementById(id);
 
-    field.addEventListener("input", function (event) {
-        clearError(event.target.id);
+    field.addEventListener("input", function () {
+        clearError(id);
     });
 
-    field.addEventListener("change", function (event) {
-        clearError(event.target.id);
+    field.addEventListener("change", function () {
+        clearError(id);
     });
-}
+});
+
 
 loadProductsFromMongoDB();

@@ -1,20 +1,24 @@
+
+
 $(document).ready(function () {
 
-    // Maximum number of units allowed in cart
-    const MAX_CART_ITEMS = 50;
-
-    // MongoDB API endpoints
+    // API endpoints
     const PRODUCTS_API = "/api/products";
     const CART_API = "/api/cart/demo-cart";
 
+    // Cart limit
+    const MAX_CART_ITEMS = 50;
+
     let products = [];
     let cart = [];
+
     let saving = false;
     let cartLoaded = false;
 
- 
+
 
     function isValidQuantity(q) {
+
         if (isNaN(q)) {
             return false;
         }
@@ -27,11 +31,13 @@ $(document).ready(function () {
     }
 
     function formatMoney(amount) {
-        return "$" + parseFloat(amount).toFixed(2);
+        return "$" + Number(amount).toFixed(2);
     }
 
     function findIndexById(list, id) {
+
         for (let i = 0; i < list.length; i++) {
+
             if (list[i].itemId === id) {
                 return i;
             }
@@ -40,8 +46,8 @@ $(document).ready(function () {
         return -1;
     }
 
-    // Total number of units currently in cart
     function getCartItemCount() {
+
         let count = 0;
 
         for (let i = 0; i < cart.length; i++) {
@@ -51,9 +57,33 @@ $(document).ready(function () {
         return count;
     }
 
+    function getCartTotal() {
+
+        let total = 0;
+
+        for (let i = 0; i < cart.length; i++) {
+            total += cart[i].itemPrice * cart[i].quantity;
+        }
+
+        return total;
+    }
+
+    function showStatus(message, type) {
+
+        const status = $("#statusMessage");
+
+        status.removeClass(
+            "d-none alert-success alert-danger alert-info"
+        );
+
+        status.addClass("alert-" + type);
+
+        status.text(message);
+    }
 
 
     async function loadProducts() {
+
         try {
 
             const response = await fetch(PRODUCTS_API);
@@ -66,26 +96,31 @@ $(document).ready(function () {
 
             displayProducts();
 
-            console.log("Products loaded from MongoDB:", products);
+            console.log(
+                "Products loaded from MongoDB:",
+                products
+            );
 
         } catch (error) {
+
+            console.error(error);
+
             showStatus(
                 "Unable to load products from MongoDB.",
                 "danger"
             );
-
-            console.error(error);
         }
     }
 
 
     async function loadCart() {
+
         try {
 
             const response = await fetch(CART_API);
 
             if (!response.ok) {
-                throw new Error("Unable to load shopping cart.");
+                throw new Error("Unable to load cart.");
             }
 
             const savedCart = await response.json();
@@ -96,18 +131,21 @@ $(document).ready(function () {
 
             displayCart();
 
-            console.log("Cart loaded from MongoDB:", cart);
+            console.log(
+                "Cart loaded from MongoDB:",
+                cart
+            );
 
         } catch (error) {
+
+            console.error(error);
 
             cartLoaded = false;
 
             showStatus(
-                "Unable to load shopping cart from MongoDB.",
+                "Unable to load shopping cart.",
                 "danger"
             );
-
-            console.error(error);
         }
     }
 
@@ -148,92 +186,116 @@ $(document).ready(function () {
                 );
             }
 
-            // Use MongoDB's saved data
-            cart = result.items;
+            // Reload items and prices returned by server
+            cart = result.items || [];
 
             displayCart();
 
-            console.log("Cart saved to MongoDB:", cart);
+            console.log(
+                "Cart saved in MongoDB:",
+                cart
+            );
 
             return true;
 
         } catch (error) {
 
+            console.error(error);
+
             showStatus(
-                "Unable to save shopping cart: " + error.message,
+                "Unable to save shopping cart: " +
+                error.message,
                 "danger"
             );
 
-            console.error(error);
-
-            // Keep original cart on screen
+            // Original cart remains unchanged
             displayCart();
 
             return false;
 
         } finally {
+
             saving = false;
+
         }
     }
 
 
-
     function displayProducts() {
 
-        let search = $("#searchInput").val().trim().toLowerCase();
-        let category = $("#categoryFilter").val();
+        const search =
+            $("#searchInput").val().trim().toLowerCase();
 
-        $("#productTableBody").html("");
+        const category =
+            $("#categoryFilter").val();
+
+        $("#productTableBody").empty();
 
         let searchCount = 0;
 
         for (let i = 0; i < products.length; i++) {
 
-            let p = products[i];
+            const p = products[i];
 
-            let matchesSearch =
-                p.itemId.toLowerCase().indexOf(search) !== -1 ||
-                p.itemTitle.toLowerCase().indexOf(search) !== -1 ||
-                p.itemCategory.toLowerCase().indexOf(search) !== -1;
+            const matchesSearch =
+                p.itemId.toLowerCase().includes(search) ||
+                p.itemTitle.toLowerCase().includes(search) ||
+                p.itemCategory.toLowerCase().includes(search);
 
-            let matchesCategory =
-                category === "" || p.itemCategory === category;
+            const matchesCategory =
+                category === "" ||
+                p.itemCategory === category;
 
             if (matchesSearch && matchesCategory) {
 
                 searchCount++;
 
-                let info = "—";
+                const info = p.itemInfo || "—";
 
-                if (p.itemInfo) {
-                    info = p.itemInfo;
-                }
-
-                let row = $("<tr></tr>");
+                const row = $("<tr></tr>");
 
                 row.append($("<td></td>").text(p.itemId));
-                row.append($("<td></td>").text(p.itemTitle));
-                row.append($("<td></td>").text(p.itemCategory));
-                row.append($("<td></td>").text(p.itemUnit));
-                row.append($("<td></td>").text(formatMoney(p.itemPrice)));
-                row.append($("<td></td>").text(info));
 
-                let button = $("<button></button>");
+                row.append(
+                    $("<td></td>").text(p.itemTitle)
+                );
+
+                row.append(
+                    $("<td></td>").text(p.itemCategory)
+                );
+
+                row.append(
+                    $("<td></td>").text(p.itemUnit)
+                );
+
+                row.append(
+                    $("<td></td>").text(
+                        formatMoney(p.itemPrice)
+                    )
+                );
+
+                row.append(
+                    $("<td></td>").text(info)
+                );
+
+                const button = $("<button></button>");
 
                 button.addClass(
                     "btn btn-primary btn-sm add-to-cart-btn"
                 );
 
                 button.attr("type", "button");
+
                 button.text("Add to Cart");
 
                 button.on("click", function () {
                     addToCart(p);
                 });
 
-                let buttonCell = $("<td></td>");
+                const buttonCell = $("<td></td>");
 
                 buttonCell.addClass("text-end");
+
                 buttonCell.append(button);
 
                 row.append(buttonCell);
@@ -245,13 +307,18 @@ $(document).ready(function () {
         $("#productCount").text(searchCount);
 
         if (searchCount === 0) {
+
             $("#noResultsMessage").removeClass("d-none");
+
         } else {
+
             $("#noResultsMessage").addClass("d-none");
+
         }
     }
 
     $("#searchInput").on("input", displayProducts);
+
     $("#categoryFilter").on("change", displayProducts);
 
 
@@ -259,7 +326,12 @@ $(document).ready(function () {
     async function addToCart(product) {
 
         if (saving || !cartLoaded) {
-            showStatus("Shopping cart is not ready.", "info");
+
+            showStatus(
+                "Shopping cart is still loading.",
+                "info"
+            );
+
             return;
         }
 
@@ -274,10 +346,12 @@ $(document).ready(function () {
             return;
         }
 
-        // Make a copy before saving
-        let updatedCart = cart.map(item => ({ ...item }));
+        // Copy cart without changing saved data
+        const updatedCart = cart.map(
+            item => ({ ...item })
+        );
 
-        let index = findIndexById(
+        const index = findIndexById(
             updatedCart,
             product.itemId
         );
@@ -290,10 +364,6 @@ $(document).ready(function () {
 
             updatedCart.push({
                 itemId: product.itemId,
-                itemTitle: product.itemTitle,
-                itemCategory: product.itemCategory,
-                itemUnit: product.itemUnit,
-                itemPrice: parseFloat(product.itemPrice),
                 quantity: 1
             });
 
@@ -311,39 +381,32 @@ $(document).ready(function () {
     }
 
 
-
-    function getCartTotal() {
-
-        let total = 0;
-
-        for (let i = 0; i < cart.length; i++) {
-            total += cart[i].itemPrice * cart[i].quantity;
-        }
-
-        return total;
-    }
-
-   
-
     function displayCart() {
 
-        $("#cartTableBody").html("");
-
-        let totalItems = getCartItemCount();
+        $("#cartTableBody").empty();
 
         for (let i = 0; i < cart.length; i++) {
 
-            let item = cart[i];
+            const item = cart[i];
 
-            let row = $("<tr></tr>");
+            const row = $("<tr></tr>");
 
-            row.append($("<td></td>").text(item.itemId));
-            row.append($("<td></td>").text(item.itemTitle));
             row.append(
-                $("<td></td>").text(formatMoney(item.itemPrice))
+                $("<td></td>").text(item.itemId)
             );
 
-            let qtyInput = $("<input>");
+            row.append(
+                $("<td></td>").text(item.itemTitle)
+            );
+
+            row.append(
+                $("<td></td>").text(
+                    formatMoney(item.itemPrice)
+                )
+            );
+
+            // Quantity input
+            const qtyInput = $("<input>");
 
             qtyInput.attr("type", "number");
             qtyInput.attr("min", "1");
@@ -371,22 +434,25 @@ $(document).ready(function () {
                 )
             );
 
-            let button = $("<button></button>");
+            // Remove button
+            const button = $("<button></button>");
 
             button.addClass(
                 "btn btn-outline-danger btn-sm remove-from-cart-btn"
             );
 
             button.attr("type", "button");
+
             button.text("Remove");
 
             button.on("click", function () {
                 removeFromCart(item.itemId);
             });
 
-            let buttonCell = $("<td></td>");
+            const buttonCell = $("<td></td>");
 
             buttonCell.addClass("text-end");
+
             buttonCell.append(button);
 
             row.append(buttonCell);
@@ -394,20 +460,24 @@ $(document).ready(function () {
             $("#cartTableBody").append(row);
         }
 
-        $("#cartCount").text(totalItems);
+        $("#cartCount").text(getCartItemCount());
 
         $("#cartTotal").text(
             formatMoney(getCartTotal())
         );
 
         if (cart.length === 0) {
+
             $("#emptyCartMessage").removeClass("d-none");
+
         } else {
+
             $("#emptyCartMessage").addClass("d-none");
+
         }
     }
 
-  
+
     async function updateQuantity(item, value) {
 
         if (saving || !cartLoaded) {
@@ -415,7 +485,7 @@ $(document).ready(function () {
             return;
         }
 
-        let qty = Number(value);
+        const qty = Number(value);
 
         if (!isValidQuantity(qty)) {
 
@@ -430,12 +500,12 @@ $(document).ready(function () {
             return;
         }
 
-        let otherUnits =
+        const otherUnits =
             getCartItemCount() - item.quantity;
 
         if (otherUnits + qty > MAX_CART_ITEMS) {
 
-            let canAdd =
+            const canAdd =
                 MAX_CART_ITEMS - otherUnits;
 
             showStatus(
@@ -450,13 +520,18 @@ $(document).ready(function () {
             return;
         }
 
-        let updatedCart = cart.map(cartItem => ({
-            ...cartItem,
-            quantity:
-                cartItem.itemId === item.itemId
-                    ? qty
-                    : cartItem.quantity
-        }));
+        const updatedCart = cart.map(
+            cartItem => ({
+
+                ...cartItem,
+
+                quantity:
+                    cartItem.itemId === item.itemId
+                        ? qty
+                        : cartItem.quantity
+
+            })
+        );
 
         if (await saveCart(updatedCart)) {
 
@@ -468,13 +543,12 @@ $(document).ready(function () {
         }
     }
 
- 
 
     async function removeFromCart(id) {
 
         if (saving || !cartLoaded) return;
 
-        let updatedCart = cart.filter(
+        const updatedCart = cart.filter(
             item => item.itemId !== id
         );
 
@@ -487,6 +561,7 @@ $(document).ready(function () {
 
         }
     }
+
 
     $("#clearCartBtn").on("click", async function () {
 
@@ -502,7 +577,9 @@ $(document).ready(function () {
             return;
         }
 
-        if (confirm("Are you sure you want to clear your cart?")) {
+        if (confirm(
+            "Are you sure you want to clear your cart?"
+        )) {
 
             if (await saveCart([])) {
 
@@ -516,27 +593,16 @@ $(document).ready(function () {
     });
 
 
-    function showStatus(message, type) {
-
-        let status = $("#statusMessage");
-
-        status.removeClass(
-            "d-none alert-success alert-danger alert-info"
-        );
-
-        status.addClass("alert-" + type);
-
-        status.text(message);
-    }
-
-    // ==========================================
-    // CHECKOUT
-    // ==========================================
 
     $("#checkoutBtn").on("click", function () {
 
         if (saving || !cartLoaded) {
-            showStatus("Cart is not ready.", "info");
+
+            showStatus(
+                "Shopping cart is not ready.",
+                "info"
+            );
+
             return;
         }
 
@@ -561,12 +627,9 @@ $(document).ready(function () {
             return;
         }
 
-        // The cart remains in MongoDB.
-        // Billing will use the saved items.
+        // Keep cart saved for the Billing page
         window.location.href = "billing.html";
     });
-
-
 
     loadProducts();
     loadCart();
