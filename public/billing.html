@@ -282,6 +282,16 @@
 
         </div>
 
+        <!-- Saved records from MongoDB (React, script at the bottom of this page) -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="billing-box">
+                    <h2 class="h4 mb-3">Order History</h2>
+                    <div id="react-order-history"></div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Footer -->
@@ -387,12 +397,154 @@
             const root = ReactDOM.createRoot(document.getElementById("react-order-summary"));
             root.render(<OrderSummary />);
         });
+
+        // ==========================================================
+        // React: Order History (reads / updates / deletes orders in MongoDB)
+        //   GET    /api/billing?email=...      -> list orders
+        //   PUT    /api/billing/:orderNumber   -> cancel an order
+        //   DELETE /api/billing/:orderNumber   -> delete an order
+        // ==========================================================
+        const STATUS_COLORS = { Paid: "bg-success", Cancelled: "bg-secondary", Refunded: "bg-info text-dark" };
+
+        function OrderHistory() {
+            const [email, setEmail] = useState("");
+            const [orders, setOrders] = useState([]);
+            const [message, setMessage] = useState({ type: "", text: "" });
+            const [loading, setLoading] = useState(false);
+            const [confirmDelete, setConfirmDelete] = useState("");   // order number waiting for a 2nd click
+
+            async function loadOrders(lookupEmail) {
+                setLoading(true);
+                try {
+                    const query = lookupEmail ? "?email=" + encodeURIComponent(lookupEmail) : "";
+                    const data = await api(BILLING_API + query);
+                    setOrders(data);
+                    setMessage({ type: "", text: "" });
+                } catch (error) {
+                    setMessage({ type: "danger", text: "Could not load orders: " + error.message });
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            useEffect(() => {
+                // Start with the email from the last purchase, if there is one
+                let startEmail = "";
+                try {
+                    const last = JSON.parse(localStorage.getItem("lastBillingOrder"));
+                    if (last && last.email) startEmail = last.email;
+                } catch (e) { }
+                setEmail(startEmail);
+                loadOrders(startEmail);
+
+                // billing.js calls this after a successful purchase
+                window.billingApp.onOrderSaved = function (saved) {
+                    setEmail(saved.customer.email);
+                    loadOrders(saved.customer.email);
+                };
+            }, []);
+
+            function handleLookup(event) {
+                event.preventDefault();
+                loadOrders(email.trim());
+            }
+
+            async function cancelOrder(order) {
+                try {
+                    const updated = await api(BILLING_API + "/" + order.orderNumber, "PUT", { status: "Cancelled" });
+                    setOrders(orders.map(o => o.orderNumber === updated.orderNumber ? updated : o));
+                    setMessage({ type: "success", text: "Order " + updated.orderNumber + " was cancelled." });
+                } catch (error) {
+                    setMessage({ type: "danger", text: error.message });
+                }
+            }
+
+            async function deleteOrder(order) {
+                if (confirmDelete !== order.orderNumber) {
+                    setConfirmDelete(order.orderNumber);   // first click: ask to confirm
+                    return;
+                }
+                try {
+                    await api(BILLING_API + "/" + order.orderNumber, "DELETE");
+                    setOrders(orders.filter(o => o.orderNumber !== order.orderNumber));
+                    setMessage({ type: "success", text: "Order " + order.orderNumber + " was deleted." });
+                } catch (error) {
+                    setMessage({ type: "danger", text: error.message });
+                } finally {
+                    setConfirmDelete("");
+                }
+            }
+
+            return (
+                <div>
+                    <form className="row g-2 mb-3" onSubmit={handleLookup}>
+                        <div className="col-sm-8">
+                            <input type="email" className="form-control" placeholder="Email used at checkout (leave blank for all orders)"
+                                value={email} onChange={e => setEmail(e.target.value)} aria-label="Order lookup email" />
+                        </div>
+                        <div className="col-sm-4 d-grid">
+                            <button type="submit" className="btn btn-primary">Show Orders</button>
+                        </div>
+                    </form>
+
+                    {message.text && <div className={"alert alert-" + message.type}>{message.text}</div>}
+                    {loading && <p className="text-muted">Loading orders...</p>}
+                    {!loading && orders.length === 0 && <p className="text-muted mb-0">No orders found.</p>}
+
+                    {orders.length > 0 && (
+                        <div className="table-responsive">
+                            <table className="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>Customer</th>
+                                        <th>Items</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orders.map(order => (
+                                        <tr key={order.orderNumber}>
+                                            <td>
+                                                <strong>{order.orderNumber}</strong>
+                                                <small className="d-block text-muted">
+                                                    {new Date(order.createdAt).toLocaleDateString()}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                {order.customer.fullName}
+                                                <small className="d-block text-muted">{order.customer.email}</small>
+                                            </td>
+                                            <td>{order.order.items.map(i => i.itemTitle + " x" + i.quantity).join(", ")}</td>
+                                            <td>{formatMoney(order.order.total)}</td>
+                                            <td><span className={"badge " + (STATUS_COLORS[order.status] || "bg-secondary")}>{order.status}</span></td>
+                                            <td className="text-nowrap">
+                                                {order.status === "Paid" && (
+                                                    <button type="button" className="btn btn-sm btn-outline-secondary me-1"
+                                                        onClick={() => cancelOrder(order)}>Cancel</button>
+                                                )}
+                                                <button type="button" className="btn btn-sm btn-outline-danger"
+                                                    onClick={() => deleteOrder(order)}>
+                                                    {confirmDelete === order.orderNumber ? "Confirm delete" : "Delete"}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        $(function () {
+            ReactDOM.createRoot(document.getElementById("react-order-history")).render(<OrderHistory />);
+        });
+
     </script>
-
-</body>
-
-
-</html>
 
 </body>
 

@@ -310,6 +310,16 @@
 
         </div>
 
+        <!-- Saved records from MongoDB (React, script at the bottom of this page) -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="returns-box">
+                    <h2 class="h4 mb-3">Return Request History</h2>
+                    <div id="react-return-history"></div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Footer -->
@@ -402,6 +412,168 @@
             const root = ReactDOM.createRoot(document.getElementById("react-return-summary"));
             root.render(<ReturnSummary />);
         });
+
+        // ==========================================================
+        // React: Return History (reads / updates / deletes returns in MongoDB)
+        //   GET    /api/returns?email=...     -> list return requests
+        //   PUT    /api/returns/:returnId     -> change the status
+        //   DELETE /api/returns/:returnId     -> delete a request
+        // ==========================================================
+        const RETURN_STATUSES = ["Received", "Approved", "Rejected", "Refunded", "Cancelled"];
+        const RETURN_COLORS = {
+            Received: "bg-primary", Approved: "bg-success", Rejected: "bg-danger",
+            Refunded: "bg-info text-dark", Cancelled: "bg-secondary"
+        };
+
+        function ReturnHistory() {
+            const [email, setEmail] = useState("");
+            const [returns, setReturns] = useState([]);
+            const [statusEdits, setStatusEdits] = useState({});       // { returnId: "Approved" }
+            const [message, setMessage] = useState({ type: "", text: "" });
+            const [loading, setLoading] = useState(false);
+            const [confirmDelete, setConfirmDelete] = useState("");
+
+            async function loadReturns(lookupEmail) {
+                setLoading(true);
+                try {
+                    const query = lookupEmail ? "?email=" + encodeURIComponent(lookupEmail) : "";
+                    const data = await api(RETURNS_API + query);
+                    setReturns(data);
+                    setStatusEdits({});
+                    setMessage({ type: "", text: "" });
+                } catch (error) {
+                    setMessage({ type: "danger", text: "Could not load return requests: " + error.message });
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            useEffect(() => {
+                let startEmail = "";
+                try {
+                    const last = JSON.parse(localStorage.getItem("lastBillingOrder"));
+                    if (last && last.email) startEmail = last.email;
+                } catch (e) { }
+                setEmail(startEmail);
+                loadReturns(startEmail);
+
+                // returns.js calls this after a successful submit
+                window.returnsApp.onReturnSaved = function (saved) {
+                    setEmail(saved.customer.email);
+                    loadReturns(saved.customer.email);
+                };
+            }, []);
+
+            function handleLookup(event) {
+                event.preventDefault();
+                loadReturns(email.trim());
+            }
+
+            async function saveStatus(ret) {
+                const newStatus = statusEdits[ret.returnId];
+                if (!newStatus || newStatus === ret.status) return;
+                try {
+                    const updated = await api(RETURNS_API + "/" + ret.returnId, "PUT", { status: newStatus });
+                    setReturns(returns.map(r => r.returnId === updated.returnId ? updated : r));
+                    setMessage({ type: "success", text: updated.returnId + " is now " + updated.status + "." });
+                } catch (error) {
+                    setMessage({ type: "danger", text: error.message });
+                }
+            }
+
+            async function deleteReturn(ret) {
+                if (confirmDelete !== ret.returnId) {
+                    setConfirmDelete(ret.returnId);
+                    return;
+                }
+                try {
+                    await api(RETURNS_API + "/" + ret.returnId, "DELETE");
+                    setReturns(returns.filter(r => r.returnId !== ret.returnId));
+                    setMessage({ type: "success", text: "Return " + ret.returnId + " was deleted." });
+                } catch (error) {
+                    setMessage({ type: "danger", text: error.message });
+                } finally {
+                    setConfirmDelete("");
+                }
+            }
+
+            return (
+                <div>
+                    <form className="row g-2 mb-3" onSubmit={handleLookup}>
+                        <div className="col-sm-8">
+                            <input type="email" className="form-control" placeholder="Email on the return (leave blank for all requests)"
+                                value={email} onChange={e => setEmail(e.target.value)} aria-label="Return lookup email" />
+                        </div>
+                        <div className="col-sm-4 d-grid">
+                            <button type="submit" className="btn btn-primary">Show Returns</button>
+                        </div>
+                    </form>
+
+                    {message.text && <div className={"alert alert-" + message.type}>{message.text}</div>}
+                    {loading && <p className="text-muted">Loading return requests...</p>}
+                    {!loading && returns.length === 0 && <p className="text-muted mb-0">No return requests found.</p>}
+
+                    {returns.length > 0 && (
+                        <div className="table-responsive">
+                            <table className="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Return</th>
+                                        <th>Product</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Update Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {returns.map(ret => (
+                                        <tr key={ret.returnId}>
+                                            <td>
+                                                <strong>{ret.returnId}</strong>
+                                                <small className="d-block text-muted">{ret.orderNumber}</small>
+                                            </td>
+                                            <td>
+                                                {ret.product.itemTitle}
+                                                <small className="d-block text-muted">{formatMoney(ret.product.itemPrice)}</small>
+                                            </td>
+                                            <td>
+                                                {ret.reason}
+                                                <small className="d-block text-muted">{ret.condition}</small>
+                                            </td>
+                                            <td><span className={"badge " + (RETURN_COLORS[ret.status] || "bg-secondary")}>{ret.status}</span></td>
+                                            <td>
+                                                <div className="input-group input-group-sm" style={{ minWidth: "190px" }}>
+                                                    <select className="form-select" aria-label={"New status for " + ret.returnId}
+                                                        value={statusEdits[ret.returnId] || ret.status}
+                                                        onChange={e => setStatusEdits({ ...statusEdits, [ret.returnId]: e.target.value })}>
+                                                        {RETURN_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                                                    </select>
+                                                    <button type="button" className="btn btn-outline-primary"
+                                                        disabled={!statusEdits[ret.returnId] || statusEdits[ret.returnId] === ret.status}
+                                                        onClick={() => saveStatus(ret)}>Save</button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <button type="button" className="btn btn-sm btn-outline-danger text-nowrap"
+                                                    onClick={() => deleteReturn(ret)}>
+                                                    {confirmDelete === ret.returnId ? "Confirm delete" : "Delete"}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        $(function () {
+            ReactDOM.createRoot(document.getElementById("react-return-history")).render(<ReturnHistory />);
+        });
+
     </script>
 
 </body>
