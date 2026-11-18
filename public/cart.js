@@ -628,6 +628,18 @@ $(document).ready(function () {
         }
 
         // Keep cart saved for the Billing page
+            // Hand the cart to the Billing page
+        try {
+            localStorage.setItem("checkoutCart", JSON.stringify({
+                items: cart.map(item => ({
+                    itemId: item.itemId,
+                    itemTitle: item.itemTitle,
+                    itemPrice: item.itemPrice,
+                    quantity: item.quantity
+                }))
+            }));
+        } catch (e) { console.error(e); }
+
         window.location.href = "billing.html";
     });
 

@@ -4,7 +4,8 @@
   "description": "Node backend for the Connect Summit 2026 Billing and Returns pages",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed": "node seed.js && node seed-billing-returns.js"
   },
   "license": "ISC",
   "dependencies": {

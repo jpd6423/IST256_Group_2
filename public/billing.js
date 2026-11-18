@@ -365,6 +365,9 @@ $(document).ready(function () {
                 console.error(e);
             }
 
+            // Empty the saved cart in MongoDB (shoppingcarts collection)
+            fetch("/api/cart/demo-cart", { method: "DELETE" }).catch(console.error);
+
             $("#billingForm")[0].reset();
             $("#billingForm .is-valid, #billingForm .is-invalid").removeClass("is-valid is-invalid");
             if (window.billingApp.onFormReset) window.billingApp.onFormReset();

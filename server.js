@@ -33,9 +33,8 @@ app.use("/api/attendees", require("./routes/attendees"));
 app.use("/api/registrations", require("./routes/registrations"));
 app.use("/api/billing", require("./routes/billing"));
 app.use("/api/returns", require("./routes/returns"));
-
-
-// TODO (later): app.use("/api/products", require("./routes/products")); etc.
+app.use("/api/products", require("./routes/products"));
+app.use("/api/cart", require("./routes/cart"));
 
 
 app.use(function (err, req, res, next) {
